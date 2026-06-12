@@ -154,6 +154,8 @@
     <span class="chip">Firebase FCM</span>
     <span class="chip">PWA</span>
     <span class="chip">7 Fases completadas</span>
+    <span class="chip" style="background:rgba(29,158,117,.35)">Código 100% listo</span>
+    <span class="chip" style="background:rgba(239,159,39,.35)">Pendiente: deploy</span>
   </div>
 </header>
 
@@ -190,6 +192,7 @@
       <li><a href="#uploads">Subida de documentos</a></li>
       <li><a href="#bugfixes">Correcciones de bugs</a></li>
       <li><a href="#archivos">Mapa de todos los archivos</a></li>
+      <li><a href="#estado-actual"><strong>Estado actual y pendientes</strong></a></li>
     </ol>
   </div>
 </div>
@@ -910,6 +913,114 @@
     <tr><td><code>sql/debug_conductor.php</code></td><td>Util</td><td>Script de diagnóstico para revisar el estado de un conductor en la BD</td></tr>
   </tbody>
 </table>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- ESTADO ACTUAL — JUNIO 2026                        -->
+<!-- ══════════════════════════════════════════════════ -->
+<h2 class="section" id="estado-actual">📍 Estado actual del proyecto — Junio 2026</h2>
+
+<div class="plain-box">
+  <strong>Resumen ejecutivo</strong>
+  La codificación está <strong>100% terminada</strong>. Las 7 fases están implementadas y funcionando en el entorno local (Laragon / Windows). El siguiente paso es el deploy a producción, que se realizará en una etapa posterior junto con la contratación del dominio y el hosting.
+</div>
+
+<div class="overview-grid">
+  <div class="ov-card"><div class="num" style="color:var(--success)">✓</div><div class="label">Código<br>completado</div></div>
+  <div class="ov-card"><div class="num" style="color:var(--success)">7/7</div><div class="label">Fases<br>implementadas</div></div>
+  <div class="ov-card"><div class="num" style="color:var(--accent)">0</div><div class="label">Funciones<br>pendientes de código</div></div>
+  <div class="ov-card"><div class="num" style="color:var(--warning)">3</div><div class="label">APIs externas<br>a configurar</div></div>
+</div>
+
+<h3 class="sub">Prototipo demo (GitHub Pages)</h3>
+<p>Se publicó un prototipo estático interactivo para mostrar el diseño y flujo de la app sin necesidad de un servidor backend.</p>
+<table>
+  <thead><tr><th>Detalle</th><th>Valor</th></tr></thead>
+  <tbody>
+    <tr><td>URL pública</td><td><code>https://danihnd.github.io/movix/</code></td></tr>
+    <tr><td>Repositorio</td><td><code>https://github.com/DaniHND/movix.git</code></td></tr>
+    <tr><td>Carpeta</td><td><code>/docs/</code> en rama <code>main</code></td></tr>
+    <tr><td>Páginas</td><td>4 HTML interactivas: Login, Portal Cliente, Portal Conductor, Panel Admin</td></tr>
+    <tr><td>Backend</td><td>Ninguno — solo visual/demo estático</td></tr>
+    <tr><td>Logo</td><td>Logo real de Movix integrado en el login del demo</td></tr>
+  </tbody>
+</table>
+
+<h3 class="sub" style="margin-top:28px">Pendiente para producción — Configuración de servicios externos</h3>
+<p>No se requiere escribir código adicional. Solo configurar credenciales en el archivo <code>.env</code> antes del deploy.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Servicio</th>
+      <th>Para qué sirve en Movix</th>
+      <th>Costo</th>
+      <th>Requiere tarjeta</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Google Maps API Key</strong></td>
+      <td>Mapa interactivo en el portal cliente, autocomplete de destinos, cálculo de rutas</td>
+      <td>Gratis hasta $200 USD/mes de crédito. Luego pago por uso (suficiente para app pequeña/mediana)</td>
+      <td>Sí</td>
+    </tr>
+    <tr>
+      <td><strong>Firebase FCM Server Key</strong></td>
+      <td>Notificaciones push al teléfono del conductor cuando le llega un viaje nuevo</td>
+      <td><strong>Gratis total</strong>, sin límite de notificaciones</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td><strong>SMTP (Gmail o SendGrid)</strong></td>
+      <td>Emails de verificación de cuenta al registrarse y recuperación de contraseña</td>
+      <td>Gratis — Gmail hasta 500/día, SendGrid hasta 100/día</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td><strong>Hosting (Railway recomendado)</strong></td>
+      <td>Servidor donde corre la app PHP + base de datos MySQL</td>
+      <td>Plan gratis muy limitado; Hobby ~$5 USD/mes recomendado para producción real</td>
+      <td>Sí</td>
+    </tr>
+    <tr>
+      <td><strong>Dominio propio</strong></td>
+      <td>URL personalizada (ej: movix.hn o movixhonduras.com)</td>
+      <td>~$15–30 USD/año según el TLD (.com, .hn)</td>
+      <td>Sí</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 class="sub" style="margin-top:28px">Variables <code>.env</code> a completar antes del deploy</h3>
+<div class="tech-box">
+  <strong>Archivo .env — valores reales de producción</strong>
+  <pre style="font-family:monospace;font-size:.82rem;line-height:1.8;color:#374151">APP_URL=https://tudominio.com
+APP_ENV=production
+
+# Base de datos (Railway los genera automáticamente)
+DB_HOST=
+DB_NAME=
+DB_USER=
+DB_PASS=
+
+# Email (Gmail SMTP o SendGrid)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=tucorreo@gmail.com
+MAIL_PASS=contraseña_de_aplicacion_gmail
+MAIL_FROM=noreply@tudominio.com
+
+# Google Maps
+GOOGLE_MAPS_KEY=AIza...
+
+# Firebase Cloud Messaging
+FCM_SERVER_KEY=AAAAxx...</pre>
+</div>
+
+<div class="plain-box" style="background:#fef9c3;border-color:#fbbf24">
+  <strong style="color:#92400e">Nota sobre el modelo de negocio</strong>
+  <span style="color:#78350f">La estructura de comisiones de la plataforma (% que cobra Movix por viaje) y el flujo de pagos (si el dinero pasa por la app o es directo cliente→conductor) están pendientes de definir. Esto afectará los valores que muestre el dashboard de "Ingresos" del admin pero <strong>no requiere cambios de código</strong>, solo configurar los datos correctos en la base de datos.</span>
+</div>
 
 </main>
 
