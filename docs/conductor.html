@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1D9E75">
+    <title>Movix — Portal Conductor (Demo)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/mobile.css">
+    <link rel="stylesheet" href="assets/css/conductor.css">
+    <style>
+        .demo-bar {
+            background: linear-gradient(90deg, #1D9E75, #0F3460);
+            color: #fff;
+            text-align: center;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .demo-toast {
+            position: fixed;
+            bottom: calc(var(--navbar-height) + 16px);
+            left: 50%;
+            transform: translateX(-50%) translateY(30px);
+            background: #1e293b;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 600;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            white-space: nowrap;
+            max-width: 90vw;
+            text-align: center;
+        }
+        .demo-toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        /* Viaje asignado (oculto por defecto) */
+        #viaje-asignado  { display: none; }
+        #viaje-en-curso  { display: none; }
+        #waiting-screen  { display: none; }
+        #offline-screen  { display: block; }
+        #viajes-disponibles { display: none; }
+
+        .trip-step-btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body class="portal-conductor">
+
+    <div class="demo-bar">🚘 Portal Conductor — Demo interactivo</div>
+    <div class="demo-toast" id="demo-toast"></div>
+
+    <header class="conductor-topbar">
+        <div class="topbar-logo">
+            <span class="topbar-logo-icon">M</span>
+            <span class="topbar-logo-text">Movix</span>
+        </div>
+        <div class="topbar-info">
+            <span class="topbar-nombre">Carlos M.</span>
+        </div>
+    </header>
+
+    <main class="conductor-page">
+
+        <!-- Toggle online/offline -->
+        <div class="online-section">
+            <div class="online-card" id="online-card">
+                <div class="online-status-dot" id="status-dot"></div>
+                <div class="online-info">
+                    <span class="online-label" id="online-label">Fuera de línea</span>
+                    <span class="online-sub" id="online-sub">Actívate para recibir viajes</span>
+                </div>
+                <label class="toggle-switch" title="Activar disponibilidad">
+                    <input type="checkbox" id="toggle-activo" onchange="toggleOnline(this.checked)">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Offline -->
+        <div id="offline-screen">
+            <div class="offline-screen">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" stroke-width="1.2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <line x1="23" y1="1" x2="1" y2="23"/>
+                </svg>
+                <p class="offline-text">Estás fuera de línea</p>
+                <p class="offline-sub">Activa el interruptor para comenzar a recibir viajes.</p>
+            </div>
+        </div>
+
+        <!-- Esperando viajes (online, sin viaje) -->
+        <div id="waiting-screen">
+            <div class="waiting-screen">
+                <div class="waiting-pulse">
+                    <span></span><span></span><span></span>
+                </div>
+                <p class="waiting-text">Esperando solicitudes de viaje…</p>
+            </div>
+        </div>
+
+        <!-- Viajes disponibles -->
+        <div id="viajes-disponibles">
+            <div class="section-title">Viajes disponibles</div>
+
+            <div class="viaje-card" id="viaje-card-1">
+                <div class="viaje-card-header">
+                    <span class="vc-badge vc-badge--pendiente">Pendiente</span>
+                    <span class="vc-precio">L. 85.00</span>
+                </div>
+                <div class="viaje-route">
+                    <div class="route-row">
+                        <span class="route-dot route-dot--origen"></span>
+                        <span class="route-text">Col. Kennedy, Tegucigalpa</span>
+                    </div>
+                    <div class="route-connector-small"></div>
+                    <div class="route-row">
+                        <span class="route-dot route-dot--destino"></span>
+                        <span class="route-text">Mall Multiplaza, Tegucigalpa</span>
+                    </div>
+                </div>
+                <div class="viaje-meta">
+                    <span>6.4 km</span><span>·</span>
+                    <span>Convencional</span><span>·</span>
+                    <span>María L.</span>
+                </div>
+                <div class="viaje-actions">
+                    <button class="btn-conductor btn-conductor--success btn-full" onclick="tomarViaje()">
+                        Tomar viaje
+                    </button>
+                </div>
+            </div>
+
+            <div class="viaje-card">
+                <div class="viaje-card-header">
+                    <span class="vc-badge vc-badge--pendiente">Pendiente</span>
+                    <span class="vc-precio">L. 220.00</span>
+                </div>
+                <div class="viaje-route">
+                    <div class="route-row">
+                        <span class="route-dot route-dot--origen"></span>
+                        <span class="route-text">Hotel Honduras Maya, Tegucigalpa</span>
+                    </div>
+                    <div class="route-connector-small"></div>
+                    <div class="route-row">
+                        <span class="route-dot route-dot--destino"></span>
+                        <span class="route-text">Aeropuerto Toncontín</span>
+                    </div>
+                </div>
+                <div class="viaje-meta">
+                    <span>12.1 km</span><span>·</span>
+                    <span>VIP</span><span>·</span>
+                    <span>Roberto F.</span>
+                </div>
+                <div class="viaje-actions">
+                    <button class="btn-conductor btn-conductor--success btn-full"
+                            onclick="showToast('✅ Viaje VIP tomado — Roberto F. notificado')">
+                        Tomar viaje
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Viaje asignado (tomado, pendiente iniciar) -->
+        <div id="viaje-asignado">
+            <div class="section-title">Viaje asignado</div>
+            <div class="viaje-card viaje-card--activo">
+                <div class="viaje-card-header">
+                    <span class="vc-badge vc-badge--asignado">Asignado</span>
+                    <span class="vc-precio">L. 85.00</span>
+                </div>
+                <div class="viaje-route">
+                    <div class="route-row">
+                        <span class="route-dot route-dot--origen"></span>
+                        <span class="route-text">Col. Kennedy, Tegucigalpa</span>
+                    </div>
+                    <div class="route-connector-small"></div>
+                    <div class="route-row">
+                        <span class="route-dot route-dot--destino"></span>
+                        <span class="route-text">Mall Multiplaza, Tegucigalpa</span>
+                    </div>
+                </div>
+                <div class="viaje-meta">
+                    <span>6.4 km</span><span>·</span><span>Convencional</span><span>·</span><span>María L.</span>
+                </div>
+                <div class="viaje-actions">
+                    <button class="btn-conductor btn-conductor--success btn-full" onclick="iniciarViaje()">
+                        Iniciar viaje
+                    </button>
+                </div>
+
+                <!-- Chat demo -->
+                <div class="chat-section-conductor">
+                    <div class="chat-toggle-conductor" onclick="toggleChat()">
+                        <span class="chat-toggle-label-c">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                            </svg>
+                            Chat con el cliente
+                        </span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                    <div class="chat-body-conductor" id="chat-body">
+                        <div class="chat-messages-c" id="chat-msgs">
+                            <div class="bubble bubble--in">
+                                Hola, ya estoy esperando en la entrada principal
+                                <span class="bubble-time">hace 2 min</span>
+                            </div>
+                        </div>
+                        <div class="chat-input-row">
+                            <input type="text" id="chat-input" class="chat-input-c"
+                                   placeholder="Escribe un mensaje…" onkeydown="sendChat(event)">
+                            <button class="chat-send-c" onclick="sendChatBtn()">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Viaje en curso -->
+        <div id="viaje-en-curso">
+            <div class="section-title">Viaje en curso</div>
+            <div class="viaje-card viaje-card--activo">
+                <div class="viaje-card-header">
+                    <span class="vc-badge vc-badge--en_curso">En curso</span>
+                    <span class="vc-precio">L. 85.00</span>
+                </div>
+                <div class="viaje-route">
+                    <div class="route-row">
+                        <span class="route-dot route-dot--origen"></span>
+                        <span class="route-text">Col. Kennedy, Tegucigalpa</span>
+                    </div>
+                    <div class="route-connector-small"></div>
+                    <div class="route-row">
+                        <span class="route-dot route-dot--destino"></span>
+                        <span class="route-text">Mall Multiplaza, Tegucigalpa</span>
+                    </div>
+                </div>
+                <div class="viaje-meta">
+                    <span>6.4 km</span><span>·</span><span>Convencional</span><span>·</span><span>María L.</span>
+                </div>
+                <div class="viaje-actions">
+                    <button class="btn-conductor btn-conductor--primary btn-full" onclick="completarViaje()">
+                        Completar viaje
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span>Inicio</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showToast('📋 Historial: 127 viajes completados — L. 9,450.00 total')">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Historial</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showToast('👤 Carlos M. · Toyota Corolla 2020 · Taxi #247 · Aprobado')">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>Perfil</span>
+        </a>
+        <a href="index.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span>Salir</span>
+        </a>
+    </nav>
+
+    <script>
+    function toggleOnline(active) {
+        var card  = document.getElementById('online-card');
+        var label = document.getElementById('online-label');
+        var sub   = document.getElementById('online-sub');
+        if (active) {
+            card.classList.add('online-card--active');
+            label.textContent = 'En línea';
+            sub.textContent   = 'Recibirás solicitudes de viaje';
+            document.getElementById('offline-screen').style.display  = 'none';
+            document.getElementById('waiting-screen').style.display  = 'none';
+            document.getElementById('viajes-disponibles').style.display = 'block';
+        } else {
+            card.classList.remove('online-card--active');
+            label.textContent = 'Fuera de línea';
+            sub.textContent   = 'Actívate para recibir viajes';
+            document.getElementById('offline-screen').style.display    = 'block';
+            document.getElementById('waiting-screen').style.display    = 'none';
+            document.getElementById('viajes-disponibles').style.display = 'none';
+            document.getElementById('viaje-asignado').style.display    = 'none';
+            document.getElementById('viaje-en-curso').style.display    = 'none';
+        }
+    }
+
+    function tomarViaje() {
+        document.getElementById('viajes-disponibles').style.display = 'none';
+        document.getElementById('viaje-asignado').style.display     = 'block';
+        showToast('✅ Viaje tomado — María L. fue notificada');
+    }
+
+    function iniciarViaje() {
+        document.getElementById('viaje-asignado').style.display = 'none';
+        document.getElementById('viaje-en-curso').style.display  = 'block';
+        showToast('🚕 Viaje iniciado — GPS activo');
+    }
+
+    function completarViaje() {
+        document.getElementById('viaje-en-curso').style.display  = 'none';
+        document.getElementById('waiting-screen').style.display  = 'block';
+        showToast('🏁 Viaje completado — L. 85.00 registrados');
+        setTimeout(function() {
+            document.getElementById('waiting-screen').style.display    = 'none';
+            document.getElementById('viajes-disponibles').style.display = 'block';
+        }, 3500);
+    }
+
+    function toggleChat() {
+        var body = document.getElementById('chat-body');
+        body.classList.toggle('open');
+    }
+
+    function sendChat(e) {
+        if (e.key === 'Enter') sendChatBtn();
+    }
+
+    function sendChatBtn() {
+        var input = document.getElementById('chat-input');
+        var text  = input.value.trim();
+        if (!text) return;
+        var msgs  = document.getElementById('chat-msgs');
+        var bubble = document.createElement('div');
+        bubble.className = 'bubble bubble--out';
+        bubble.innerHTML = text + '<span class="bubble-time">ahora</span>';
+        msgs.appendChild(bubble);
+        msgs.scrollTop = msgs.scrollHeight;
+        input.value = '';
+    }
+
+    var toastTimer;
+    function showToast(msg) {
+        var t = document.getElementById('demo-toast');
+        t.textContent = msg;
+        t.classList.add('visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() { t.classList.remove('visible'); }, 3200);
+    }
+    </script>
+</body>
+</html>

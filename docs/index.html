@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0F3460">
+    <title>Movix — Prototipo Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/mobile.css">
+    <style>
+        .demo-header {
+            background: linear-gradient(90deg, #0F3460, #E94560);
+            color: #fff;
+            text-align: center;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .demo-portals {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .demo-portal-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.15s, opacity 0.15s;
+            color: #fff;
+        }
+        .demo-portal-btn:active { transform: scale(0.97); opacity: 0.9; }
+        .demo-portal-btn--cliente   { background: #0F3460; }
+        .demo-portal-btn--conductor { background: #1D9E75; }
+        .demo-portal-btn--admin     { background: #E94560; }
+        .demo-portal-btn span:last-child { font-size: 20px; }
+        .demo-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 4px;
+            color: var(--color-muted);
+            font-size: 13px;
+        }
+        .demo-divider::before,
+        .demo-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--color-border);
+        }
+        .demo-credits {
+            text-align: center;
+            font-size: 12px;
+            color: var(--color-muted);
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        .demo-cred-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--color-bg);
+            font-size: 13px;
+        }
+        .demo-cred-row:last-child { border-bottom: none; }
+        .demo-cred-portal {
+            font-weight: 600;
+            color: var(--color-primary);
+            min-width: 80px;
+        }
+        .demo-cred-email { color: var(--color-muted); font-size: 12px; }
+    </style>
+</head>
+<body class="portal-auth">
+
+    <div class="demo-header">🚀 Prototipo interactivo de Movix — Plataforma web de transporte</div>
+
+    <main class="auth-main">
+        <div class="auth-container">
+            <div class="auth-card">
+
+                <div class="auth-logo">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo-text">Movix</h1>
+                    <p class="logo-tagline">Tu transporte, ahora</p>
+                </div>
+
+                <div class="portal-tabs" role="tablist">
+                    <button type="button" class="portal-tab active" data-portal="cliente">Cliente</button>
+                    <button type="button" class="portal-tab" data-portal="conductor">Conductor</button>
+                    <button type="button" class="portal-tab" data-portal="admin">Admin</button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Correo electrónico</label>
+                    <input type="email" id="demo-email" class="input-field" value="test@movix.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="demo-pass" class="input-field" value="Movix1234">
+                        <button type="button" class="btn-toggle-pass" onclick="togglePass(this)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="demo-divider">Acceder al demo</div>
+
+                <div class="demo-portals">
+                    <a href="cliente.html" class="demo-portal-btn demo-portal-btn--cliente">
+                        <span>🚕 Portal Cliente</span>
+                        <span>→</span>
+                    </a>
+                    <a href="conductor.html" class="demo-portal-btn demo-portal-btn--conductor">
+                        <span>🚘 Portal Conductor</span>
+                        <span>→</span>
+                    </a>
+                    <a href="admin.html" class="demo-portal-btn demo-portal-btn--admin">
+                        <span>⚙️ Panel Administración</span>
+                        <span>→</span>
+                    </a>
+                </div>
+
+                <div class="demo-divider">Credenciales de prueba</div>
+
+                <div>
+                    <div class="demo-cred-row">
+                        <span class="demo-cred-portal">Cliente</span>
+                        <span class="demo-cred-email">test@movix.com / Movix1234</span>
+                    </div>
+                    <div class="demo-cred-row">
+                        <span class="demo-cred-portal">Conductor</span>
+                        <span class="demo-cred-email">conductor@movix.com / Conductor1234</span>
+                    </div>
+                    <div class="demo-cred-row">
+                        <span class="demo-cred-portal">Admin</span>
+                        <span class="demo-cred-email">admin@movix.com / Admin1234</span>
+                    </div>
+                </div>
+
+                <p class="demo-credits">
+                    Plataforma web de transporte · PHP 8.1 + MySQL 8<br>
+                    Tegucigalpa, Honduras · Moneda: Lempiras (L.)
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    var creds = {
+        cliente:   { email: 'test@movix.com',       pass: 'Movix1234'      },
+        conductor: { email: 'conductor@movix.com',  pass: 'Conductor1234'  },
+        admin:     { email: 'admin@movix.com',       pass: 'Admin1234'      },
+    };
+
+    document.querySelectorAll('.portal-tab').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.portal-tab').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            var c = creds[btn.dataset.portal];
+            if (c) {
+                document.getElementById('demo-email').value = c.email;
+                document.getElementById('demo-pass').value  = c.pass;
+            }
+        });
+    });
+
+    function togglePass(btn) {
+        var input = btn.previousElementSibling;
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+    </script>
+</body>
+</html>

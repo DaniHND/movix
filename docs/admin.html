@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0F3460">
+    <title>Panel Admin — Movix Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <style>
+        .demo-info-bar {
+            background: #1e293b;
+            color: #94a3b8;
+            font-size: 12px;
+            padding: 7px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .demo-info-bar strong { color: #e94560; }
+        .demo-info-bar a { color: #60a5fa; text-decoration: none; }
+        .demo-info-bar a:hover { text-decoration: underline; }
+        .conductor-row-demo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .conductor-avatar-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--color-success);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="portal-admin">
+
+<div class="demo-info-bar">
+    <span><strong>⚙️ Panel Admin — Demo</strong> · Datos de ejemplo</span>
+    <a href="index.html">← Volver al inicio</a>
+</div>
+
+<div class="admin-shell">
+
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <aside class="admin-sidebar" id="admin-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <span class="sidebar-logo-icon">M</span>
+                <span class="sidebar-logo-text">Movix Admin</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="sidebar-link active" onclick="setPage('dashboard',this); return false;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                Dashboard
+            </a>
+            <a href="#" class="sidebar-link" onclick="setPage('conductores',this); return false;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                </svg>
+                Conductores
+            </a>
+            <a href="#" class="sidebar-link" onclick="setPage('tarifas',this); return false;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="2" x2="12" y2="22"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                </svg>
+                Tarifas
+            </a>
+            <a href="#" class="sidebar-link" onclick="setPage('viajes',this); return false;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0L6.343 16.657a8 8 0 1111.314 0z"/>
+                    <circle cx="12" cy="11" r="3"/>
+                </svg>
+                Viajes
+            </a>
+            <a href="#" class="sidebar-link" onclick="setPage('clientes',this); return false;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                </svg>
+                Clientes
+            </a>
+            <a href="#" class="sidebar-link" onclick="setPage('cupones',this); return false;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/>
+                    <path d="M12 22V7"/>
+                    <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/>
+                    <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
+                </svg>
+                Cupones
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="index.html" class="sidebar-link sidebar-link--logout">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Cerrar sesión
+            </a>
+        </div>
+    </aside>
+
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <button class="topbar-menu-btn" id="sidebar-toggle" onclick="toggleSidebar()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6"  x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <span class="topbar-breadcrumb" id="topbar-title">Dashboard</span>
+            <div class="topbar-user">
+                <span class="topbar-avatar">A</span>
+                <span class="topbar-name">Admin</span>
+            </div>
+        </header>
+
+        <main class="admin-content">
+
+            <!-- ── DASHBOARD ──────────────────────────── -->
+            <div id="page-dashboard">
+                <div class="page-header">
+                    <h2>Dashboard</h2>
+                    <p id="dashboard-date">Jueves, 12 de junio de 2026</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-card__label">Viajes hoy</span>
+                        <span class="stat-card__value">47</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__label">Viajes este mes</span>
+                        <span class="stat-card__value">1,284</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__label">Ingresos hoy</span>
+                        <span class="stat-card__value stat-card__value--success">L. 2,350.00</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__label">Ingresos este mes</span>
+                        <span class="stat-card__value stat-card__value--success">L. 64,200.00</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__label">Conductores activos</span>
+                        <span class="stat-card__value stat-card__value--accent">8</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__label">Conductores pendientes</span>
+                        <span class="stat-card__value stat-card__value--warning">3</span>
+                        <a href="#" class="stat-card__link" onclick="setPageByName('conductores')">Revisar →</a>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__label">Clientes registrados</span>
+                        <span class="stat-card__value">312</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__label">Viajes sin conductor</span>
+                        <span class="stat-card__value">0</span>
+                    </div>
+                </div>
+
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <h3 class="chart-title">Viajes — últimos 30 días</h3>
+                        <canvas id="chart-viajes" height="120"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3 class="chart-title">Ingresos (L.) — últimos 30 días</h3>
+                        <canvas id="chart-ingresos" height="120"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── CONDUCTORES ─────────────────────────── -->
+            <div id="page-conductores" style="display:none">
+                <div class="page-header">
+                    <h2>Conductores</h2>
+                    <p>Gestión y aprobación de conductores</p>
+                </div>
+                <div class="filter-tabs">
+                    <a href="#" class="filter-tab active">Todos (18)</a>
+                    <a href="#" class="filter-tab">Aprobados (12)</a>
+                    <a href="#" class="filter-tab" style="color:#EF9F27;border-color:#EF9F27">Pendientes (3)</a>
+                    <a href="#" class="filter-tab">Suspendidos (3)</a>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Conductor</th>
+                                <th>Vehículo</th>
+                                <th>Taxi #</th>
+                                <th>Estado</th>
+                                <th class="hide-mobile">Registro</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="conductor-row-demo"><div class="conductor-avatar-sm">C</div><div><strong>Carlos M.</strong><br><span class="td-muted">carlos@mail.com</span></div></div></td>
+                                <td>Toyota Corolla 2020 · Blanco</td>
+                                <td class="td-mono">#247</td>
+                                <td><span class="badge badge--aprobado">Aprobado</span></td>
+                                <td class="td-muted hide-mobile">15/01/2026</td>
+                                <td><button class="btn btn-ghost btn-sm" onclick="alert('Demo: Ver detalles del conductor')">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td><div class="conductor-row-demo"><div class="conductor-avatar-sm" style="background:#EF9F27">J</div><div><strong>José R.</strong><br><span class="td-muted">jose@mail.com</span></div></div></td>
+                                <td>Honda Civic 2019 · Gris</td>
+                                <td class="td-mono">#312</td>
+                                <td><span class="badge badge--pendiente">Pendiente</span></td>
+                                <td class="td-muted hide-mobile">10/06/2026</td>
+                                <td>
+                                    <button class="btn btn-success btn-sm" onclick="alert('Demo: Conductor aprobado')">Aprobar</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><div class="conductor-row-demo"><div class="conductor-avatar-sm" style="background:#0F3460">A</div><div><strong>Ana P.</strong><br><span class="td-muted">ana@mail.com</span></div></div></td>
+                                <td>Nissan Sentra 2021 · Plateado</td>
+                                <td class="td-mono">#198</td>
+                                <td><span class="badge badge--aprobado">Aprobado</span></td>
+                                <td class="td-muted hide-mobile">03/03/2026</td>
+                                <td><button class="btn btn-ghost btn-sm" onclick="alert('Demo: Ver detalles del conductor')">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td><div class="conductor-row-demo"><div class="conductor-avatar-sm" style="background:#E24B4A">M</div><div><strong>Miguel T.</strong><br><span class="td-muted">miguel@mail.com</span></div></div></td>
+                                <td>Hyundai Accent 2018 · Azul</td>
+                                <td class="td-mono">#405</td>
+                                <td><span class="badge badge--pendiente">Pendiente</span></td>
+                                <td class="td-muted hide-mobile">11/06/2026</td>
+                                <td>
+                                    <button class="btn btn-success btn-sm" onclick="alert('Demo: Conductor aprobado')">Aprobar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── TARIFAS ──────────────────────────────── -->
+            <div id="page-tarifas" style="display:none">
+                <div class="page-header">
+                    <h2>Tarifas</h2>
+                    <p>Configuración de precios por tipo y horario</p>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Horario</th>
+                                <th>Tarifa base</th>
+                                <th>Precio por km</th>
+                                <th>Mín. cobro</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge badge--conv">Convencional</span></td>
+                                <td>Diurno (6:00–22:00)</td>
+                                <td>L. 30.00</td>
+                                <td>L. 8.50/km</td>
+                                <td>L. 40.00</td>
+                                <td><button class="btn btn-ghost btn-sm" onclick="alert('Demo: Editar tarifa — campo inline habilitado')">Editar</button></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge--conv">Convencional</span></td>
+                                <td>Nocturno (22:00–6:00)</td>
+                                <td>L. 40.00</td>
+                                <td>L. 11.00/km</td>
+                                <td>L. 50.00</td>
+                                <td><button class="btn btn-ghost btn-sm" onclick="alert('Demo: Editar tarifa — campo inline habilitado')">Editar</button></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge--vip">VIP</span></td>
+                                <td>Diurno (6:00–22:00)</td>
+                                <td>L. 55.00</td>
+                                <td>L. 13.50/km</td>
+                                <td>L. 65.00</td>
+                                <td><button class="btn btn-ghost btn-sm" onclick="alert('Demo: Editar tarifa — campo inline habilitado')">Editar</button></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge--vip">VIP</span></td>
+                                <td>Nocturno (22:00–6:00)</td>
+                                <td>L. 70.00</td>
+                                <td>L. 17.00/km</td>
+                                <td>L. 80.00</td>
+                                <td><button class="btn btn-ghost btn-sm" onclick="alert('Demo: Editar tarifa — campo inline habilitado')">Editar</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── VIAJES ───────────────────────────────── -->
+            <div id="page-viajes" style="display:none">
+                <div class="page-header">
+                    <h2>Viajes</h2>
+                    <p>Monitoreo de todos los viajes del sistema</p>
+                </div>
+                <div class="filter-tabs">
+                    <a href="#" class="filter-tab active">Todos</a>
+                    <a href="#" class="filter-tab">Pendientes</a>
+                    <a href="#" class="filter-tab">En curso</a>
+                    <a href="#" class="filter-tab">Completados</a>
+                    <a href="#" class="filter-tab">Cancelados</a>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Cliente</th>
+                                <th class="hide-mobile">Destino</th>
+                                <th>Tipo</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="td-mono">#1052</td>
+                                <td>María L.</td>
+                                <td class="hide-mobile">Mall Multiplaza</td>
+                                <td><span class="badge badge--conv">Conv.</span></td>
+                                <td><strong>L. 85.00</strong></td>
+                                <td><span class="badge badge--en_curso">En curso</span></td>
+                            </tr>
+                            <tr>
+                                <td class="td-mono">#1051</td>
+                                <td>Roberto F.</td>
+                                <td class="hide-mobile">Aeropuerto Toncontín</td>
+                                <td><span class="badge badge--vip">VIP</span></td>
+                                <td><strong>L. 220.00</strong></td>
+                                <td><span class="badge badge--completado">Completado</span></td>
+                            </tr>
+                            <tr>
+                                <td class="td-mono">#1050</td>
+                                <td>Laura G.</td>
+                                <td class="hide-mobile">UNAH, Tegucigalpa</td>
+                                <td><span class="badge badge--conv">Conv.</span></td>
+                                <td><strong>L. 65.00</strong></td>
+                                <td><span class="badge badge--completado">Completado</span></td>
+                            </tr>
+                            <tr>
+                                <td class="td-mono">#1049</td>
+                                <td>Pedro M.</td>
+                                <td class="hide-mobile">Col. Palmira</td>
+                                <td><span class="badge badge--conv">Conv.</span></td>
+                                <td><strong>L. 55.00</strong></td>
+                                <td><span class="badge badge--cancelado">Cancelado</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── CLIENTES ─────────────────────────────── -->
+            <div id="page-clientes" style="display:none">
+                <div class="page-header">
+                    <h2>Clientes</h2>
+                    <p>312 clientes registrados</p>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Viajes</th>
+                                <th class="hide-mobile">Registro</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>María López</strong></td>
+                                <td class="td-muted">test@movix.com</td>
+                                <td>12</td>
+                                <td class="td-muted hide-mobile">10/01/2026</td>
+                                <td><span class="badge badge--aprobado">Activa</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Roberto Fuentes</strong></td>
+                                <td class="td-muted">roberto@mail.com</td>
+                                <td>7</td>
+                                <td class="td-muted hide-mobile">22/02/2026</td>
+                                <td><span class="badge badge--aprobado">Activo</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Laura García</strong></td>
+                                <td class="td-muted">laura@mail.com</td>
+                                <td>23</td>
+                                <td class="td-muted hide-mobile">05/11/2025</td>
+                                <td><span class="badge badge--aprobado">Activa</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ── CUPONES ──────────────────────────────── -->
+            <div id="page-cupones" style="display:none">
+                <div class="page-header">
+                    <h2>Cupones de descuento</h2>
+                    <p>Gestión de códigos promocionales</p>
+                </div>
+                <div class="actions-bar">
+                    <button class="btn-admin btn-admin--primary" onclick="alert('Demo: Formulario para crear nuevo cupón')">
+                        + Nuevo cupón
+                    </button>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Descuento</th>
+                                <th>Usos / Máx</th>
+                                <th class="hide-mobile">Vence</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="td-mono" style="font-weight:700">BIENVENIDO</td>
+                                <td>20%</td>
+                                <td>48 / 100</td>
+                                <td class="td-muted hide-mobile">31/12/2026</td>
+                                <td><span class="badge badge--aprobado">Activo</span></td>
+                                <td><button class="btn-table-action" onclick="alert('Demo: Cupón desactivado')">Desactivar</button></td>
+                            </tr>
+                            <tr>
+                                <td class="td-mono" style="font-weight:700">MOVIX10</td>
+                                <td>10%</td>
+                                <td>213 / 500</td>
+                                <td class="td-muted hide-mobile">31/12/2026</td>
+                                <td><span class="badge badge--aprobado">Activo</span></td>
+                                <td><button class="btn-table-action" onclick="alert('Demo: Cupón desactivado')">Desactivar</button></td>
+                            </tr>
+                            <tr>
+                                <td class="td-mono" style="font-weight:700;opacity:0.5">VERANO25</td>
+                                <td>25%</td>
+                                <td>100 / 100</td>
+                                <td class="td-muted hide-mobile">30/04/2026</td>
+                                <td><span class="badge badge--suspendido">Vencido</span></td>
+                                <td><button class="btn-table-action" onclick="alert('Demo: Cupón reactivado')">Activar</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+// Sidebar
+function toggleSidebar() {
+    document.getElementById('admin-sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('visible');
+}
+function closeSidebar() {
+    document.getElementById('admin-sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('visible');
+}
+
+// Navegación de páginas
+var pages = ['dashboard','conductores','tarifas','viajes','clientes','cupones'];
+
+function setPage(name, linkEl) {
+    pages.forEach(function(p) {
+        document.getElementById('page-' + p).style.display = p === name ? '' : 'none';
+    });
+    document.querySelectorAll('.sidebar-link').forEach(function(l) { l.classList.remove('active'); });
+    if (linkEl) linkEl.classList.add('active');
+    document.getElementById('topbar-title').textContent =
+        name.charAt(0).toUpperCase() + name.slice(1);
+    closeSidebar();
+    if (name === 'dashboard') {
+        setTimeout(function() {
+            drawChart('chart-viajes',   viajesData,   '#0F3460');
+            drawChart('chart-ingresos', ingresosData, '#1D9E75');
+        }, 50);
+    }
+}
+
+function setPageByName(name) {
+    var links = document.querySelectorAll('.sidebar-link');
+    var idx   = pages.indexOf(name);
+    setPage(name, links[idx] || null);
+}
+
+// ── Gráficas ─────────────────────────────────────────
+var days = [], viajesData = [], ingresosData = [];
+for (var i = 29; i >= 0; i--) {
+    var d = new Date(2026, 5, 12); // 12 jun 2026
+    d.setDate(d.getDate() - i);
+    days.push((d.getMonth()+1) + '/' + d.getDate());
+    var v = Math.max(8, Math.round(35 + Math.sin(i * 0.35) * 14 + (Math.random() - 0.5) * 10));
+    viajesData.push(v);
+    ingresosData.push(Math.round(v * (68 + Math.random() * 28)));
+}
+
+function drawChart(id, data, color) {
+    var canvas = document.getElementById(id);
+    if (!canvas) return;
+    var dpr  = window.devicePixelRatio || 1;
+    var W    = canvas.offsetWidth;
+    var H    = canvas.clientHeight || 120;
+    if (!W) return;
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    var pad = { top: 14, right: 12, bottom: 26, left: 44 };
+    var cW  = W - pad.left - pad.right;
+    var cH  = H - pad.top  - pad.bottom;
+    var max = Math.max.apply(null, data) * 1.12;
+    var min = 0;
+
+    // Grid + labels Y
+    ctx.strokeStyle = '#E5E7EB';
+    ctx.lineWidth   = 1;
+    for (var i = 0; i <= 4; i++) {
+        var y = pad.top + cH - cH * i / 4;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+        ctx.fillStyle   = '#9CA3AF';
+        ctx.font        = '10px Roboto, sans-serif';
+        ctx.textAlign   = 'right';
+        var val = Math.round((max - min) * i / 4);
+        ctx.fillText(val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val, pad.left - 5, y + 3);
+    }
+
+    // Gradient fill
+    var grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
+    grad.addColorStop(0, color + '40');
+    grad.addColorStop(1, color + '05');
+
+    function px(idx) { return pad.left + idx / (data.length - 1) * cW; }
+    function py(val) { return pad.top + cH - (val - min) / (max - min) * cH; }
+
+    // Fill area
+    ctx.beginPath();
+    data.forEach(function(v, i) { i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)); });
+    ctx.lineTo(px(data.length - 1), pad.top + cH);
+    ctx.lineTo(pad.left, pad.top + cH);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    data.forEach(function(v, i) { i === 0 ? ctx.moveTo(px(i), py(v)) : ctx.lineTo(px(i), py(v)); });
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 2;
+    ctx.lineJoin    = 'round';
+    ctx.stroke();
+
+    // Puntos en valor máximo y extremos
+    var maxIdx = data.indexOf(Math.max.apply(null, data));
+    [0, maxIdx, data.length - 1].forEach(function(idx) {
+        ctx.beginPath();
+        ctx.arc(px(idx), py(data[idx]), 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.fillStyle   = '#fff';
+        ctx.beginPath();
+        ctx.arc(px(idx), py(data[idx]), 1.5, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // Labels X
+    ctx.fillStyle  = '#9CA3AF';
+    ctx.font       = '10px Roboto, sans-serif';
+    ctx.textAlign  = 'center';
+    [0, 14, 29].forEach(function(idx) {
+        ctx.fillText(days[idx], px(idx), H - 6);
+    });
+}
+
+// Init
+window.addEventListener('load', function() {
+    var d = new Date();
+    var names = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    var months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    var el = document.getElementById('dashboard-date');
+    if (el) el.textContent = names[d.getDay()] + ', ' + d.getDate() + ' de ' + months[d.getMonth()] + ' de ' + d.getFullYear();
+    setTimeout(function() {
+        drawChart('chart-viajes',   viajesData,   '#0F3460');
+        drawChart('chart-ingresos', ingresosData, '#1D9E75');
+    }, 100);
+});
+
+window.addEventListener('resize', function() {
+    if (document.getElementById('page-dashboard').style.display !== 'none') {
+        drawChart('chart-viajes',   viajesData,   '#0F3460');
+        drawChart('chart-ingresos', ingresosData, '#1D9E75');
+    }
+});
+</script>
+</body>
+</html>

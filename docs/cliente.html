@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0F3460">
+    <title>Movix — Portal Cliente (Demo)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/mobile.css">
+    <link rel="stylesheet" href="assets/css/cliente.css">
+    <style>
+        .demo-chip {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(233,69,96,0.92);
+            color: #fff;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            z-index: 500;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        /* Mapa simulado */
+        .mapa-simulado {
+            position: fixed;
+            inset: 0;
+            bottom: var(--navbar-height);
+            background: linear-gradient(155deg, #0a2444 0%, #16213E 50%, #1a3a60 100%);
+            z-index: 0;
+            overflow: hidden;
+        }
+        .mapa-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+            background-size: 44px 44px;
+        }
+        /* Calles simuladas */
+        .mapa-calle-h {
+            position: absolute;
+            left: 0; right: 0;
+            height: 3px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 2px;
+        }
+        .mapa-calle-v {
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 3px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 2px;
+        }
+        .mapa-pin-dest {
+            position: absolute;
+            top: 28%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 2;
+        }
+        .mapa-pin-dest svg { animation: pinBounce 2s ease-in-out infinite; display: block; margin: 0 auto; }
+        @keyframes pinBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50%       { transform: translateY(-8px) scale(1.05); }
+        }
+        .mapa-pin-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 11px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+        .taxi-marker {
+            position: absolute;
+            top: 42%;
+            left: 28%;
+            font-size: 30px;
+            z-index: 2;
+            animation: taxiDrive 5s ease-in-out infinite;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        @keyframes taxiDrive {
+            0%,100% { transform: translate(0,0) rotate(-8deg);    }
+            25%      { transform: translate(18px,-12px) rotate(5deg);  }
+            50%      { transform: translate(40px,-6px) rotate(-5deg);  }
+            75%      { transform: translate(22px,8px) rotate(8deg);  }
+        }
+        .mapa-eta {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(29,158,117,0.9);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            z-index: 3;
+        }
+        /* Estados del bottom sheet */
+        #bs-buscar  { display: none; }
+        #bs-ruta    { display: block; }
+        #bs-viaje   { display: none; }
+        /* Notificación demo */
+        .demo-toast {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            background: #1D9E75;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 600;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+            white-space: nowrap;
+            max-width: 90vw;
+            text-align: center;
+        }
+        .demo-toast.visible { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body class="portal-cliente mapa-activo">
+
+    <span class="demo-chip">🚕 Portal Cliente — Demo</span>
+    <div class="demo-toast" id="demo-toast"></div>
+
+    <!-- Mapa simulado -->
+    <div class="mapa-simulado">
+        <div class="mapa-grid"></div>
+        <!-- Calles decorativas -->
+        <div class="mapa-calle-h" style="top:30%"></div>
+        <div class="mapa-calle-h" style="top:55%"></div>
+        <div class="mapa-calle-h" style="top:72%"></div>
+        <div class="mapa-calle-v" style="left:25%"></div>
+        <div class="mapa-calle-v" style="left:55%"></div>
+        <div class="mapa-calle-v" style="left:78%"></div>
+        <!-- Taxi animado -->
+        <div class="taxi-marker">🚕</div>
+        <!-- ETA -->
+        <div class="mapa-eta">ETA ~8 min</div>
+        <!-- Pin destino -->
+        <div class="mapa-pin-dest">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="#E94560" stroke="none">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            <p class="mapa-pin-label">Mall Multiplaza</p>
+        </div>
+    </div>
+
+    <!-- FAB ubicación -->
+    <button class="location-fab" title="Mi ubicación" onclick="showToast('📍 Ubicación actual centrada')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+        </svg>
+    </button>
+
+    <!-- Bottom sheet: búsqueda (inicio) -->
+    <div id="bs-buscar" class="bottom-sheet bs-buscar">
+        <div class="bs-handle"></div>
+        <div class="bs-buscar-content">
+            <p class="bs-greeting">Hola, María 👋</p>
+            <div class="search-wrapper" onclick="showRuta()">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input id="destino-input" type="text" class="search-input"
+                       placeholder="¿A dónde quieres ir?" readonly>
+            </div>
+            <div class="services-row">
+                <div class="service-chip">🚕 Convencional</div>
+                <div class="service-chip">🚘 VIP</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom sheet: ruta + precio -->
+    <div id="bs-ruta" class="bottom-sheet bs-ruta">
+        <div class="bs-handle"></div>
+        <div class="bs-ruta-content">
+            <div class="route-stack">
+                <div class="route-row">
+                    <span class="route-dot route-dot--origen"></span>
+                    <div class="route-field">
+                        <span class="route-input route-input--filled">Mi ubicación actual</span>
+                    </div>
+                </div>
+                <div class="route-connector"></div>
+                <div class="route-row">
+                    <span class="route-dot route-dot--destino"></span>
+                    <div class="route-field">
+                        <span class="route-input route-input--filled">Mall Multiplaza, Tegucigalpa</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="route-meta">
+                <span class="route-meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span id="ruta-duracion">18 min</span>
+                </span>
+                <span class="route-meta-sep">·</span>
+                <span class="route-meta-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="2" x2="12" y2="22"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                    </svg>
+                    <span id="ruta-distancia">6.4 km</span>
+                </span>
+            </div>
+
+            <div class="service-cards">
+                <button class="service-card service-card--selected" id="card-conv"
+                        type="button" onclick="selectService('convencional')">
+                    <span class="service-card-emoji">🚕</span>
+                    <span class="service-card-name">Convencional</span>
+                    <span class="service-card-price" id="precio-conv">L. 85.00</span>
+                </button>
+                <button class="service-card" id="card-vip"
+                        type="button" onclick="selectService('vip')">
+                    <span class="service-card-emoji">🚘</span>
+                    <span class="service-card-name">VIP</span>
+                    <span class="service-card-price" id="precio-vip">L. 140.00</span>
+                </button>
+            </div>
+
+            <div class="options-row">
+                <span class="options-label">Pasajeros</span>
+                <div class="counter">
+                    <button id="btn-menos" class="counter-btn" type="button" onclick="changePass(-1)">−</button>
+                    <span id="num-pasajeros" class="counter-val">1</span>
+                    <button id="btn-mas" class="counter-btn" type="button" onclick="changePass(1)">+</button>
+                </div>
+            </div>
+
+            <div class="options-row">
+                <span class="options-label">Ida y vuelta</span>
+                <label class="toggle">
+                    <input type="checkbox" id="ida-vuelta" onchange="recalcPrice()">
+                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+            </div>
+
+            <div>
+                <div class="cupon-row">
+                    <input type="text" id="cupon-input" class="cupon-input"
+                           placeholder="CÓDIGO CUPÓN (opcional)" maxlength="20" autocomplete="off">
+                    <button type="button" class="btn-cupon" onclick="applyCupon()">Aplicar</button>
+                </div>
+                <span id="cupon-msg" style="display:block;padding:3px 0;font-size:12px"></span>
+            </div>
+
+            <button class="btn-primary btn-full" style="margin-top:14px" onclick="solicitarViaje()">
+                Solicitar viaje
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom sheet: viaje asignado -->
+    <div id="bs-viaje" class="bottom-sheet bs-viaje-activo">
+        <div class="bs-handle"></div>
+        <div class="viaje-activo-header">
+            <span class="estado-badge badge--info">
+                <span class="dot-pulse"></span>
+                Conductor en camino
+            </span>
+            <span class="viaje-precio" id="precio-final">L. 85.00</span>
+        </div>
+        <div class="conductor-row">
+            <div class="conductor-avatar-wrap">
+                <div class="conductor-avatar conductor-avatar--initials">C</div>
+            </div>
+            <div class="conductor-info">
+                <strong>Carlos M.</strong>
+                <span>Toyota Corolla · Blanco — Taxi #247</span>
+            </div>
+        </div>
+        <div class="eta-bar">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Llega en aprox. 8 minutos
+        </div>
+        <div class="viaje-actions">
+            <button class="btn-primary btn-full" onclick="showToast('📍 Ver detalles del viaje en tiempo real')">
+                Ver detalles
+            </button>
+            <button class="btn-secondary" style="border-color:var(--color-danger);color:var(--color-danger)"
+                    onclick="cancelarViaje()">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Bottom nav -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span>Inicio</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showToast('📋 Historial: últimos 5 viajes completados')">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Historial</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showToast('⭐ Favoritos: Mall Multiplaza, Aeropuerto Toncontín')">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+            </svg>
+            <span>Favoritos</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showToast('👤 María López · 12 viajes realizados')">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>Perfil</span>
+        </a>
+        <a href="index.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span>Salir</span>
+        </a>
+    </nav>
+
+    <script>
+    var passengers = 1;
+    var selectedService = 'convencional';
+    var basePrice = { convencional: 85, vip: 140 };
+    var discount = 0;
+    var roundtrip = false;
+
+    function selectService(tipo) {
+        selectedService = tipo;
+        document.getElementById('card-conv').classList.toggle('service-card--selected', tipo === 'convencional');
+        document.getElementById('card-vip').classList.toggle('service-card--selected', tipo === 'vip');
+        recalcPrice();
+    }
+
+    function changePass(delta) {
+        passengers = Math.max(1, Math.min(4, passengers + delta));
+        document.getElementById('num-pasajeros').textContent = passengers;
+    }
+
+    function recalcPrice() {
+        roundtrip = document.getElementById('ida-vuelta').checked;
+        var p = basePrice[selectedService] * (roundtrip ? 2 : 1);
+        p = Math.round(p * (1 - discount));
+        document.getElementById('precio-conv').textContent = 'L. ' + (basePrice.convencional * (roundtrip ? 2 : 1) * (1 - discount)).toFixed(2);
+        document.getElementById('precio-vip').textContent  = 'L. ' + (basePrice.vip  * (roundtrip ? 2 : 1) * (1 - discount)).toFixed(2);
+    }
+
+    function applyCupon() {
+        var code = document.getElementById('cupon-input').value.toUpperCase().trim();
+        var msg  = document.getElementById('cupon-msg');
+        if (code === 'BIENVENIDO') {
+            discount = 0.20; msg.style.color = '#1D9E75';
+            msg.textContent = '✓ Cupón BIENVENIDO: 20% de descuento';
+        } else if (code === 'MOVIX10') {
+            discount = 0.10; msg.style.color = '#1D9E75';
+            msg.textContent = '✓ Cupón MOVIX10: 10% de descuento';
+        } else if (code) {
+            discount = 0; msg.style.color = '#E24B4A';
+            msg.textContent = 'Cupón inválido o expirado';
+        }
+        recalcPrice();
+    }
+
+    function solicitarViaje() {
+        var price = basePrice[selectedService] * (roundtrip ? 2 : 1) * (1 - discount);
+        document.getElementById('precio-final').textContent = 'L. ' + price.toFixed(2);
+        document.getElementById('bs-ruta').style.display = 'none';
+        document.getElementById('bs-viaje').style.display = 'block';
+        showToast('✅ Conductor asignado — Carlos M. en camino');
+    }
+
+    function cancelarViaje() {
+        document.getElementById('bs-viaje').style.display = 'none';
+        document.getElementById('bs-ruta').style.display = 'block';
+        showToast('❌ Viaje cancelado');
+    }
+
+    function showRuta() {
+        document.getElementById('bs-buscar').style.display = 'none';
+        document.getElementById('bs-ruta').style.display = 'block';
+    }
+
+    var toastTimer;
+    function showToast(msg) {
+        var t = document.getElementById('demo-toast');
+        t.textContent = msg;
+        t.classList.add('visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() { t.classList.remove('visible'); }, 3000);
+    }
+    </script>
+</body>
+</html>
