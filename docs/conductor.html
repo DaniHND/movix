@@ -59,7 +59,7 @@
 </head>
 <body class="portal-conductor">
 
-    <div class="demo-bar">🚘 Portal Conductor — Demo interactivo</div>
+    <div class="demo-bar">Portal Conductor — Demo interactivo</div>
     <div class="demo-toast" id="demo-toast"></div>
 
     <header class="conductor-topbar">
@@ -167,7 +167,7 @@
                 </div>
                 <div class="viaje-actions">
                     <button class="btn-conductor btn-conductor--success btn-full"
-                            onclick="showToast('✅ Viaje VIP tomado — Roberto F. notificado')">
+                            onclick="showToast('Viaje VIP tomado — Roberto F. notificado')">
                         Tomar viaje
                     </button>
                 </div>
@@ -276,13 +276,13 @@
             </svg>
             <span>Inicio</span>
         </a>
-        <a href="#" class="nav-item" onclick="showToast('📋 Historial: 127 viajes completados — L. 9,450.00 total')">
+        <a href="#" class="nav-item" onclick="showToast('Historial: 127 viajes completados — L. 9,450.00 total')">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
             <span>Historial</span>
         </a>
-        <a href="#" class="nav-item" onclick="showToast('👤 Carlos M. · Toyota Corolla 2020 · Taxi #247 · Aprobado')">
+        <a href="#" class="nav-item" onclick="showToast('Carlos M. · Toyota Corolla 2020 · Taxi #247 · Aprobado')">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
@@ -326,19 +326,19 @@
     function tomarViaje() {
         document.getElementById('viajes-disponibles').style.display = 'none';
         document.getElementById('viaje-asignado').style.display     = 'block';
-        showToast('✅ Viaje tomado — María L. fue notificada');
+        showToast('Viaje tomado — María L. fue notificada');
     }
 
     function iniciarViaje() {
         document.getElementById('viaje-asignado').style.display = 'none';
         document.getElementById('viaje-en-curso').style.display  = 'block';
-        showToast('🚕 Viaje iniciado — GPS activo');
+        showToast('Viaje iniciado — GPS activo');
     }
 
     function completarViaje() {
         document.getElementById('viaje-en-curso').style.display  = 'none';
         document.getElementById('waiting-screen').style.display  = 'block';
-        showToast('🏁 Viaje completado — L. 85.00 registrados');
+        showToast('Viaje completado — L. 85.00 registrados');
         setTimeout(function() {
             document.getElementById('waiting-screen').style.display    = 'none';
             document.getElementById('viajes-disponibles').style.display = 'block';

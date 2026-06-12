@@ -135,7 +135,7 @@
 </head>
 <body class="portal-cliente mapa-activo">
 
-    <span class="demo-chip">🚕 Portal Cliente — Demo</span>
+    <span class="demo-chip">Portal Cliente — Demo</span>
     <div class="demo-toast" id="demo-toast"></div>
 
     <!-- Mapa simulado -->
@@ -148,8 +148,15 @@
         <div class="mapa-calle-v" style="left:25%"></div>
         <div class="mapa-calle-v" style="left:55%"></div>
         <div class="mapa-calle-v" style="left:78%"></div>
-        <!-- Taxi animado -->
-        <div class="taxi-marker">🚕</div>
+        <!-- Vehículo animado -->
+        <div class="taxi-marker">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="8" width="20" height="10" rx="2"/>
+                <path d="M5 8l2-4h10l2 4"/>
+                <circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>
+                <line x1="9" y1="18" x2="15" y2="18"/>
+            </svg>
+        </div>
         <!-- ETA -->
         <div class="mapa-eta">ETA ~8 min</div>
         <!-- Pin destino -->
@@ -162,7 +169,7 @@
     </div>
 
     <!-- FAB ubicación -->
-    <button class="location-fab" title="Mi ubicación" onclick="showToast('📍 Ubicación actual centrada')">
+    <button class="location-fab" title="Mi ubicación" onclick="showToast('Ubicación actual centrada')">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
         </svg>
@@ -172,7 +179,7 @@
     <div id="bs-buscar" class="bottom-sheet bs-buscar">
         <div class="bs-handle"></div>
         <div class="bs-buscar-content">
-            <p class="bs-greeting">Hola, María 👋</p>
+            <p class="bs-greeting">Hola, María</p>
             <div class="search-wrapper" onclick="showRuta()">
                 <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -181,8 +188,8 @@
                        placeholder="¿A dónde quieres ir?" readonly>
             </div>
             <div class="services-row">
-                <div class="service-chip">🚕 Convencional</div>
-                <div class="service-chip">🚘 VIP</div>
+                <div class="service-chip">Convencional</div>
+                <div class="service-chip">VIP</div>
             </div>
         </div>
     </div>
@@ -227,13 +234,11 @@
             <div class="service-cards">
                 <button class="service-card service-card--selected" id="card-conv"
                         type="button" onclick="selectService('convencional')">
-                    <span class="service-card-emoji">🚕</span>
                     <span class="service-card-name">Convencional</span>
                     <span class="service-card-price" id="precio-conv">L. 85.00</span>
                 </button>
                 <button class="service-card" id="card-vip"
                         type="button" onclick="selectService('vip')">
-                    <span class="service-card-emoji">🚘</span>
                     <span class="service-card-name">VIP</span>
                     <span class="service-card-price" id="precio-vip">L. 140.00</span>
                 </button>
@@ -297,7 +302,7 @@
             Llega en aprox. 8 minutos
         </div>
         <div class="viaje-actions">
-            <button class="btn-primary btn-full" onclick="showToast('📍 Ver detalles del viaje en tiempo real')">
+            <button class="btn-primary btn-full" onclick="showToast('Ver detalles del viaje en tiempo real')">
                 Ver detalles
             </button>
             <button class="btn-secondary" style="border-color:var(--color-danger);color:var(--color-danger)"
@@ -314,19 +319,19 @@
             </svg>
             <span>Inicio</span>
         </a>
-        <a href="#" class="nav-item" onclick="showToast('📋 Historial: últimos 5 viajes completados')">
+        <a href="#" class="nav-item" onclick="showToast('Historial: últimos 5 viajes completados')">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
             <span>Historial</span>
         </a>
-        <a href="#" class="nav-item" onclick="showToast('⭐ Favoritos: Mall Multiplaza, Aeropuerto Toncontín')">
+        <a href="#" class="nav-item" onclick="showToast('Favoritos: Mall Multiplaza, Aeropuerto Toncontín')">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
             </svg>
             <span>Favoritos</span>
         </a>
-        <a href="#" class="nav-item" onclick="showToast('👤 María López · 12 viajes realizados')">
+        <a href="#" class="nav-item" onclick="showToast('María López · 12 viajes realizados')">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
@@ -375,10 +380,10 @@
         var msg  = document.getElementById('cupon-msg');
         if (code === 'BIENVENIDO') {
             discount = 0.20; msg.style.color = '#1D9E75';
-            msg.textContent = '✓ Cupón BIENVENIDO: 20% de descuento';
+            msg.textContent = 'Cupón BIENVENIDO aplicado: 20% de descuento';
         } else if (code === 'MOVIX10') {
             discount = 0.10; msg.style.color = '#1D9E75';
-            msg.textContent = '✓ Cupón MOVIX10: 10% de descuento';
+            msg.textContent = 'Cupón MOVIX10 aplicado: 10% de descuento';
         } else if (code) {
             discount = 0; msg.style.color = '#E24B4A';
             msg.textContent = 'Cupón inválido o expirado';
@@ -391,13 +396,13 @@
         document.getElementById('precio-final').textContent = 'L. ' + price.toFixed(2);
         document.getElementById('bs-ruta').style.display = 'none';
         document.getElementById('bs-viaje').style.display = 'block';
-        showToast('✅ Conductor asignado — Carlos M. en camino');
+        showToast('Conductor asignado — Carlos M. en camino');
     }
 
     function cancelarViaje() {
         document.getElementById('bs-viaje').style.display = 'none';
         document.getElementById('bs-ruta').style.display = 'block';
-        showToast('❌ Viaje cancelado');
+        showToast('Viaje cancelado');
     }
 
     function showRuta() {
