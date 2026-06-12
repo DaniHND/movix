@@ -131,6 +131,22 @@
             text-align: center;
         }
         .demo-toast.visible { transform: translateX(-50%) translateY(0); }
+        /* FIX MÓVIL: scroll táctil en iOS dentro de position:fixed */
+        .bottom-sheet {
+            -webkit-overflow-scrolling: touch;
+        }
+        /* FIX MÓVIL: en pantallas bajas (<680px) compactar el contenido del sheet */
+        @media (max-height: 680px) {
+            .bottom-sheet { max-height: 82vh; }
+            .bs-ruta-content { padding-bottom: 10px; }
+            .service-card { min-height: 70px; padding-top: 10px; padding-bottom: 10px; }
+            .options-row { padding-top: 8px; padding-bottom: 8px; }
+            .cupon-row { margin-top: 8px; }
+        }
+        /* FIX MÓVIL: demo-chip más pequeño para no tapar el handle del sheet */
+        @media (max-height: 700px) {
+            .demo-chip { font-size: 10px; padding: 4px 10px; top: 6px; }
+        }
     </style>
 </head>
 <body class="portal-cliente mapa-activo">

@@ -55,6 +55,20 @@
             gap: 8px;
             margin-top: 8px;
         }
+        /* FIX MÓVIL: asegurar que el contenido no quede detrás del topbar sticky */
+        .conductor-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 60;
+        }
+        /* FIX MÓVIL: el viaje-card con chat abierto puede ser muy largo — padding extra al final */
+        .conductor-page {
+            padding-bottom: calc(var(--navbar-height) + 32px);
+        }
+        /* FIX MÓVIL: chat messages más corto en pantallas pequeñas */
+        @media (max-height: 680px) {
+            .chat-messages-c { max-height: 120px; }
+        }
     </style>
 </head>
 <body class="portal-conductor">

@@ -44,6 +44,18 @@
             font-size: 13px;
             flex-shrink: 0;
         }
+        /* FIX MÓVIL: tabla recortada — scroll horizontal en vez de overflow:hidden */
+        .table-wrap {
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+        }
+        /* FIX MÓVIL: evitar que el admin-shell cree un nuevo contexto de stacking que rompa sticky */
+        @media (max-width: 900px) {
+            .admin-shell {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body class="portal-admin">
