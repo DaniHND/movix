@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fondo (para maskable — el área segura es el círculo central) -->
+  <rect width="512" height="512" rx="80" fill="#0F3460"/>
+  <!-- Letra M en blanco -->
+  <path d="M 96 400 L 96 128 L 176 128 L 256 264 L 336 128 L 416 128
+           L 416 400 L 352 400 L 352 228 L 280 360 L 232 360 L 160 228
+           L 160 400 Z" fill="#FFFFFF"/>
+  <!-- Barra de acento en rojo coral -->
+  <rect x="96" y="416" width="320" height="16" rx="8" fill="#E94560"/>
+</svg>

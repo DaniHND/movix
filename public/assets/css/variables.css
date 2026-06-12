@@ -1,0 +1,68 @@
+/* Movix — Variables globales de diseño
+   Paleta: Mobile-first · Sin frameworks externos */
+
+:root {
+    /* ── Colores principales ───────────────────────────── */
+    --color-primary:    #0F3460;  /* Navbar, headers, botones principales */
+    --color-accent:     #E94560;  /* CTAs, precios, urgencia, badges */
+    --color-success:    #1D9E75;  /* Conductor disponible, viaje aceptado */
+    --color-danger:     #E24B4A;  /* Conductor ocupado, cancelación, rechazo */
+    --color-warning:    #EF9F27;  /* Countdown, penalización, advertencias */
+
+    /* ── Neutros ────────────────────────────────────────── */
+    --color-bg:         #F8F9FA;  /* Fondo general */
+    --color-surface:    #FFFFFF;  /* Cards, sheets, modales */
+    --color-text:       #16213E;  /* Texto principal */
+    --color-muted:      #6B7280;  /* Texto secundario, labels */
+    --color-border:     #E5E7EB;  /* Bordes suaves */
+    --color-overlay:    rgba(22, 33, 62, 0.55);
+
+    /* ── Tipografía ─────────────────────────────────────── */
+    --font-body:        'Inter', Arial, sans-serif;
+    --font-admin:       'Roboto', Arial, sans-serif;
+
+    --text-xs:          12px;
+    --text-sm:          14px;
+    --text-base:        16px;
+    --text-lg:          18px;
+    --text-xl:          20px;
+    --text-2xl:         24px;
+    --text-3xl:         28px;
+
+    --fw-normal:        400;
+    --fw-medium:        500;
+    --fw-bold:          700;
+
+    /* ── Espaciado ──────────────────────────────────────── */
+    --space-1:   4px;
+    --space-2:   8px;
+    --space-3:   12px;
+    --space-4:   16px;
+    --space-5:   20px;
+    --space-6:   24px;
+    --space-8:   32px;
+    --space-10:  40px;
+
+    /* ── Radios ─────────────────────────────────────────── */
+    --radius-sm:   8px;
+    --radius-md:   12px;
+    --radius-lg:   16px;
+    --radius-xl:   20px;
+    --radius-full: 9999px;
+
+    /* ── Sombras ────────────────────────────────────────── */
+    --shadow-sm:   0 1px 4px rgba(0,0,0,.06);
+    --shadow-md:   0 2px 12px rgba(0,0,0,.08);
+    --shadow-lg:   0 8px 32px rgba(0,0,0,.12);
+
+    /* ── Componentes móviles ────────────────────────────── */
+    --btn-height-primary:   52px;
+    --btn-height-secondary: 48px;
+    --input-height:         48px;
+    --navbar-height:        64px;
+    --sheet-radius:         20px 20px 0 0;
+
+    /* ── Transiciones ───────────────────────────────────── */
+    --transition-fast:  0.15s ease;
+    --transition-base:  0.25s ease;
+}

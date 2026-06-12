@@ -1,0 +1,30 @@
+{
+  "name": "Movix",
+  "short_name": "Movix",
+  "description": "Tu taxi de confianza, siempre disponible",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F8F9FA",
+  "theme_color": "#0F3460",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": ["travel", "transportation"],
+  "icons": [
+    {
+      "src": "/assets/img/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Pedir viaje",
+      "short_name": "Pedir",
+      "url": "/cliente",
+      "description": "Solicita un taxi ahora"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+    "name": "movix/movix",
+    "description": "Plataforma web de transporte en taxi — Mobile First",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "vlucas/phpdotenv": "^5.5",
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "autoload": {
+        "psr-4": {}
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

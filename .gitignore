@@ -1,0 +1,29 @@
+# Entorno
+.env
+
+# Dependencias
+/vendor/
+
+# Subidas de usuarios
+/uploads/photos/*
+/uploads/docs/*
+!/uploads/photos/.gitkeep
+!/uploads/docs/.gitkeep
+/public/uploads/photos/*
+/public/uploads/docs/*
+
+# Logs
+/logs/*.log
+/logs/ratelimit/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Temporales de Office
+~$*

@@ -1,0 +1,60 @@
+Options -Indexes
+Options -MultiViews
+
+# ── Bloquear archivos sensibles ───────────────────────────────────────────────
+# Nota: manifest.json es público — no bloquear json genérico aquí
+<FilesMatch "\.(env|log|sql|lock|md)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+<FilesMatch "^(composer\.lock|package-lock\.json|composer\.json)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ── Headers de seguridad ──────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "camera=(), microphone=(), payment=()"
+
+    # Content Security Policy
+    # 'unsafe-inline' necesario para scripts de configuración inline (window.MOVIX = {...})
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://www.gstatic.com https://www.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com; connect-src 'self' https://fcm.googleapis.com https://*.googleapis.com; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+
+    # HSTS — descomentar SOLO cuando HTTPS esté activo y verificado
+    # Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # Service Worker: nunca cachear para recibir actualizaciones
+    <FilesMatch "^sw\.js$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# ── HTTPS redirect — descomentar en producción ────────────────────────────────
+# <IfModule mod_rewrite.c>
+#     RewriteCond %{HTTPS} off
+#     RewriteCond %{HTTP_HOST} !^localhost [NC]
+#     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+
+# ── Front controller ──────────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Si usas subdirectorio (ej: /Movix/public/), descomenta y ajusta:
+    # RewriteBase /Movix/public/
+
+    # Pasar Authorization header a PHP
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # No redirigir archivos o directorios que existen físicamente
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Todo lo demás va al front controller
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>

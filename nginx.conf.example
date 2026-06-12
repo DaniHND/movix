@@ -1,0 +1,74 @@
+# Movix — Nginx config de ejemplo para producción
+# Copiar a /etc/nginx/sites-available/movix y activar con symlink en sites-enabled/
+# Ajustar: server_name, rutas SSL, ruta del proyecto, versión de PHP
+
+# Redirigir HTTP → HTTPS
+server {
+    listen 80;
+    listen [::]:80;
+    server_name movix.tu-dominio.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name movix.tu-dominio.com;
+
+    root /var/www/movix/public;
+    index index.php;
+
+    # ── SSL (Let's Encrypt con Certbot) ──────────────────────────────────────
+    ssl_certificate     /etc/letsencrypt/live/movix.tu-dominio.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/movix.tu-dominio.com/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+    ssl_session_cache   shared:SSL:10m;
+
+    # ── Headers de seguridad ─────────────────────────────────────────────────
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+    add_header X-Content-Type-Options    "nosniff" always;
+    add_header X-Frame-Options           "SAMEORIGIN" always;
+    add_header Referrer-Policy           "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy        "camera=(), microphone=(), payment=()" always;
+    add_header Content-Security-Policy
+        "default-src 'self'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com; connect-src 'self' https://fcm.googleapis.com https://*.googleapis.com; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+        always;
+
+    # ── Bloquear archivos sensibles ───────────────────────────────────────────
+    location ~ /\.(env|log|sql|git|htaccess) {
+        deny all;
+        return 404;
+    }
+
+    # ── Assets estáticos — cache agresivo ────────────────────────────────────
+    location ~* \.(css|js|svg|png|jpg|jpeg|gif|ico|woff2?|ttf|otf)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # ── Service Worker — sin cache (para recibir actualizaciones) ─────────────
+    location = /sw.js {
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+        try_files $uri =404;
+    }
+
+    # ── Front controller PHP ─────────────────────────────────────────────────
+    location / {
+        try_files $uri $uri/ /index.php?url=$uri&$query_string;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_pass   unix:/var/run/php/php8.1-fpm.sock;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include        fastcgi_params;
+        fastcgi_param  HTTP_PROXY "";   # Mitigar httpoxy
+    }
+
+    # ── Logs ─────────────────────────────────────────────────────────────────
+    access_log /var/log/nginx/movix_access.log;
+    error_log  /var/log/nginx/movix_error.log;
+}

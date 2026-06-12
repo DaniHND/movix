@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movix — Resumen completo del sistema</title>
+<style>
+  :root {
+    --primary: #0F3460; --accent: #E94560; --success: #1D9E75;
+    --warning: #EF9F27; --danger: #E24B4A;
+    --bg: #F0F4F8; --card: #fff; --text: #16213E; --muted: #6B7280;
+    --border: #E5E7EB; --code-bg: #1e1e2e; --code-fg: #cdd6f4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+
+  /* ── Header ── */
+  header { background: linear-gradient(135deg, #0F3460 0%, #16213E 100%); color: #fff; padding: 48px 24px 40px; text-align: center; }
+  header .logo { font-size: 3rem; margin-bottom: 8px; }
+  header h1 { font-size: 2.2rem; letter-spacing: -0.5px; margin-bottom: 8px; }
+  header .sub { opacity: .75; font-size: 1rem; max-width: 540px; margin: 0 auto; line-height: 1.6; }
+  .header-chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+  .chip { background: rgba(255,255,255,.15); padding: 4px 14px; border-radius: 20px; font-size: .8rem; font-weight: 600; letter-spacing: .3px; }
+
+  /* ── Layout ── */
+  main { max-width: 980px; margin: 0 auto; padding: 32px 16px 80px; }
+
+  /* ── Sección genérica ── */
+  h2.section { font-size: 1.3rem; color: var(--primary); margin: 48px 0 16px; padding-bottom: 10px; border-bottom: 2px solid var(--primary); display: flex; align-items: center; gap: 10px; }
+  h3.sub { font-size: 1rem; color: var(--text); margin: 18px 0 8px; font-weight: 700; }
+  p { margin-bottom: 10px; font-size: .95rem; }
+
+  /* ── Cards de explicación ── */
+  .plain-box {
+    background: #EFF6FF; border-left: 4px solid #3B82F6; border-radius: 0 10px 10px 0;
+    padding: 14px 18px; margin: 12px 0 16px; font-size: .9rem; color: #1e3a5f;
+  }
+  .plain-box strong { display: block; margin-bottom: 4px; color: #1e40af; font-size: .82rem; text-transform: uppercase; letter-spacing: .4px; }
+  .tech-box {
+    background: #F9FAFB; border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; margin: 12px 0; font-size: .88rem;
+  }
+  .tech-box strong { color: var(--primary); display: block; margin-bottom: 6px; font-size: .82rem; text-transform: uppercase; letter-spacing: .4px; }
+
+  /* ── Portales ── */
+  .portales { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin: 16px 0 24px; }
+  .portal-card { background: var(--card); border-radius: 14px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 1px 6px rgba(0,0,0,.05); }
+  .portal-card .icon { font-size: 2rem; margin-bottom: 10px; }
+  .portal-card h4 { font-size: 1rem; color: var(--primary); margin-bottom: 6px; }
+  .portal-card p { font-size: .85rem; color: var(--muted); margin: 0; }
+  .portal-card .url { display: inline-block; margin-top: 10px; background: #EFF6FF; color: #1d4ed8; padding: 2px 10px; border-radius: 6px; font-family: monospace; font-size: .8rem; }
+
+  /* ── Stack grid ── */
+  .stack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .stack-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; font-size: .85rem; }
+  .stack-card .stack-icon { font-size: 1.5rem; margin-bottom: 8px; }
+  .stack-card strong { display: block; color: var(--primary); margin-bottom: 6px; font-size: .9rem; }
+  .stack-card ul { padding-left: 16px; }
+  .stack-card li { margin-bottom: 3px; color: var(--muted); }
+
+  /* ── Fase ── */
+  .fase { background: var(--card); border-radius: 14px; border: 1px solid var(--border); margin-bottom: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+  .fase-header { padding: 18px 20px; display: flex; align-items: center; gap: 14px; cursor: pointer; user-select: none; transition: background .15s; }
+  .fase-header:hover { background: #f8fafc; }
+  .fase-num { min-width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; flex-shrink: 0; background: var(--primary); color: #fff; }
+  .fase-num--fix { background: var(--accent); }
+  .fase-num--extra { background: var(--success); }
+  .fase-title-wrap { flex: 1; }
+  .fase-title { font-weight: 700; font-size: 1rem; color: var(--text); }
+  .fase-desc { font-size: .82rem; color: var(--muted); margin-top: 2px; }
+  .fase-body { padding: 0 20px 24px; border-top: 1px solid var(--border); display: none; }
+  .fase-body.open { display: block; }
+  .chevron { transition: transform .2s; color: var(--muted); flex-shrink: 0; }
+  .fase-header.open .chevron { transform: rotate(180deg); }
+
+  /* ── Badge ── */
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: .73rem; font-weight: 700; letter-spacing: .4px; vertical-align: middle; margin-left: 6px; }
+  .badge--done { background: #d1fae5; color: #065f46; }
+  .badge--fix  { background: #fee2e2; color: #991b1b; }
+  .badge--new  { background: #ede9fe; color: #5b21b6; }
+  .badge--dev  { background: #dbeafe; color: #1e40af; }
+
+  /* ── Listas ── */
+  ul.list { padding-left: 20px; margin: 8px 0 12px; }
+  ul.list li { margin-bottom: 5px; font-size: .9rem; }
+  ul.list li::marker { color: var(--accent); }
+
+  /* ── File chips ── */
+  .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 8px; margin-top: 14px; }
+  .file-chip { background: var(--code-bg); color: var(--code-fg); border-radius: 8px; padding: 9px 13px; font-family: monospace; font-size: .78rem; }
+  .file-chip span { display: block; font-size: .68rem; color: #89b4fa; margin-bottom: 2px; text-transform: uppercase; letter-spacing: .3px; }
+  .file-chip .desc { color: #a6e3a1; font-family: 'Segoe UI', sans-serif; font-size: .72rem; margin-top: 3px; display: block; }
+
+  /* ── Tabla ── */
+  table { width: 100%; border-collapse: collapse; font-size: .87rem; margin-top: 14px; border-radius: 10px; overflow: hidden; }
+  th { background: var(--primary); color: #fff; padding: 10px 13px; text-align: left; font-size: .82rem; }
+  td { padding: 8px 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+  td code { background: #EFF6FF; color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: .82em; font-family: monospace; }
+  .cred td:nth-child(2), .cred td:nth-child(3) { font-family: monospace; color: var(--accent); }
+
+  /* ── Separador de sección dentro de fase ── */
+  .subsection { margin-top: 20px; padding-top: 16px; border-top: 1px dashed var(--border); }
+
+  /* ── Tabla credenciales ── */
+  .cred-wrap { background: #fff8ed; border: 1px solid #fde68a; border-radius: 10px; padding: 16px; margin: 12px 0; }
+  .cred-wrap p { font-size: .88rem; color: #92400e; margin-bottom: 10px; }
+
+  /* ── Overview rápido ── */
+  .overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 16px 0 28px; }
+  .ov-card { background: var(--card); border-radius: 12px; border: 1px solid var(--border); padding: 18px 16px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+  .ov-card .num { font-size: 2rem; font-weight: 700; color: var(--primary); line-height: 1; }
+  .ov-card .label { font-size: .78rem; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+
+  /* ── TOC ── */
+  .toc { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin-bottom: 36px; }
+  .toc h4 { color: var(--primary); margin-bottom: 10px; font-size: .9rem; text-transform: uppercase; letter-spacing: .4px; }
+  .toc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 4px; }
+  .toc a { color: var(--primary); text-decoration: none; font-size: .88rem; }
+  .toc a:hover { text-decoration: underline; color: var(--accent); }
+
+  code { background: #EFF6FF; color: var(--accent); padding: 1px 6px; border-radius: 4px; font-size: .85em; font-family: monospace; }
+
+  /* ── Flow diagram ── */
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 10px 0; font-size: .85rem; }
+  .flow-step { background: var(--primary); color: #fff; padding: 5px 12px; border-radius: 6px; font-weight: 600; font-size: .8rem; }
+  .flow-arrow { color: var(--muted); font-size: 1.1rem; }
+  .flow-step.green { background: var(--success); }
+  .flow-step.red { background: var(--accent); }
+  .flow-step.yellow { background: var(--warning); color: #fff; }
+
+  @media(max-width:600px){
+    .toc-cols { grid-template-columns: 1fr; }
+    .file-grid { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🚕</div>
+  <h1>Movix</h1>
+  <p class="sub">Plataforma web de transporte en taxi — Mobile-first, instalable como app.<br>
+  Rediseño web de WeeZa para Tegucigalpa, Honduras.</p>
+  <div class="header-chips">
+    <span class="chip">PHP 8.1</span>
+    <span class="chip">MySQL 8</span>
+    <span class="chip">JavaScript Vanilla</span>
+    <span class="chip">Google Maps</span>
+    <span class="chip">Firebase FCM</span>
+    <span class="chip">PWA</span>
+    <span class="chip">7 Fases completadas</span>
+  </div>
+</header>
+
+<main>
+
+<!-- NÚMEROS RÁPIDOS -->
+<div class="overview-grid" style="margin-top:28px">
+  <div class="ov-card"><div class="num">3</div><div class="label">Portales<br>(Cliente, Conductor, Admin)</div></div>
+  <div class="ov-card"><div class="num">13</div><div class="label">Tablas en la<br>base de datos</div></div>
+  <div class="ov-card"><div class="num">7</div><div class="label">Fases de<br>desarrollo</div></div>
+  <div class="ov-card"><div class="num">40+</div><div class="label">Archivos PHP,<br>JS y CSS</div></div>
+  <div class="ov-card"><div class="num">375px</div><div class="label">Ancho mínimo<br>soportado</div></div>
+  <div class="ov-card"><div class="num">L.</div><div class="label">Moneda<br>Lempiras HN</div></div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h4>📋 Contenido</h4>
+  <div class="toc-cols">
+    <ol>
+      <li><a href="#que-es">¿Qué es Movix?</a></li>
+      <li><a href="#portales">Los 3 portales</a></li>
+      <li><a href="#stack">Tecnologías usadas</a></li>
+      <li><a href="#credenciales">Usuarios de prueba</a></li>
+      <li><a href="#fase1">Fase 1 — BD, Rutas y Login</a></li>
+      <li><a href="#fase2">Fase 2 — Portal Cliente</a></li>
+      <li><a href="#fase3">Fase 3 — Portal Conductor</a></li>
+      <li><a href="#fase4">Fase 4 — Portal Admin</a></li>
+    </ol>
+    <ol start="9">
+      <li><a href="#fase5">Fase 5 — GPS en tiempo real</a></li>
+      <li><a href="#fase6">Fase 6 — Chat, Cupones, Push</a></li>
+      <li><a href="#fase7">Fase 7 — PWA, Seguridad, Deploy</a></li>
+      <li><a href="#uploads">Subida de documentos</a></li>
+      <li><a href="#bugfixes">Correcciones de bugs</a></li>
+      <li><a href="#archivos">Mapa de todos los archivos</a></li>
+    </ol>
+  </div>
+</div>
+
+<!-- QUÉ ES MOVIX -->
+<h2 class="section" id="que-es">🚕 ¿Qué es Movix?</h2>
+<p>Movix es una <strong>aplicación web para pedir taxi</strong>, similar a Uber o inDriver, pero diseñada específicamente para Tegucigalpa, Honduras. La diferencia con una app de celular es que Movix funciona directamente desde el <strong>navegador web</strong> (Chrome, Firefox, Safari) y puede instalarse como si fuera una app nativa en el teléfono sin necesidad de ir a una tienda de aplicaciones.</p>
+
+<div class="plain-box">
+  <strong>🧑‍💻 En palabras simples</strong>
+  Imagina que abres Chrome en tu teléfono, entras a la dirección de Movix, y el navegador te pregunta "¿Quieres instalar esta app?". Le das que sí, y aparece en tu pantalla de inicio como cualquier otra app — con ícono, pantalla de carga y todo. Eso es una PWA (Progressive Web App).
+</div>
+
+<p>El sistema tiene <strong>tres tipos de usuarios</strong>: clientes que piden taxi, conductores que aceptan viajes, y administradores que gestionan todo desde un panel de control.</p>
+
+<!-- LOS 3 PORTALES -->
+<h2 class="section" id="portales">🏠 Los 3 portales</h2>
+<div class="portales">
+  <div class="portal-card">
+    <div class="icon">👤</div>
+    <h4>Portal Cliente</h4>
+    <p>Donde el pasajero pide su taxi. Tiene mapa con Google Maps, calcula el precio antes de confirmar, muestra al conductor en tiempo real y permite chatear con él.</p>
+    <span class="url">/cliente</span>
+  </div>
+  <div class="portal-card">
+    <div class="icon">🚗</div>
+    <h4>Portal Conductor</h4>
+    <p>Donde el taxista gestiona su trabajo. Puede activarse/desactivarse, ver viajes disponibles, aceptarlos, iniciarlos y completarlos. El GPS manda su ubicación en tiempo real.</p>
+    <span class="url">/conductor</span>
+  </div>
+  <div class="portal-card">
+    <div class="icon">⚙️</div>
+    <h4>Portal Admin</h4>
+    <p>Panel de control para el equipo de Movix. Aprueba o rechaza conductores, configura precios por kilómetro, revisa todos los viajes y crea cupones de descuento.</p>
+    <span class="url">/admin</span>
+  </div>
+</div>
+
+<!-- STACK -->
+<h2 class="section" id="stack">🛠️ Tecnologías usadas</h2>
+<div class="stack-grid">
+  <div class="stack-card">
+    <div class="stack-icon">🖥️</div>
+    <strong>PHP — El cerebro del servidor</strong>
+    <ul>
+      <li>Versión 8.1+</li>
+      <li>Arquitectura MVC</li>
+      <li>Sin framework externo</li>
+    </ul>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:8px">PHP es el lenguaje que corre en el servidor. Recibe las peticiones del usuario, habla con la base de datos y devuelve la página. Es como el cocinero de un restaurante: el cliente pide algo (clic), el mesero lo lleva a la cocina (PHP), y la cocina prepara y devuelve el plato (la página HTML).</p>
+  </div>
+  <div class="stack-card">
+    <div class="stack-icon">🗄️</div>
+    <strong>MySQL — La base de datos</strong>
+    <ul>
+      <li>Versión 8</li>
+      <li>13 tablas</li>
+      <li>PDO con prepared statements</li>
+    </ul>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:8px">MySQL es donde se guarda TODA la información: usuarios, viajes, chats, precios, etc. Piénsalo como una colección de hojas de cálculo muy poderosas donde cada fila es un registro (un viaje, un usuario) y cada columna es un dato (nombre, precio, fecha).</p>
+  </div>
+  <div class="stack-card">
+    <div class="stack-icon">🎨</div>
+    <strong>HTML + CSS — Lo que ves</strong>
+    <ul>
+      <li>HTML5 semántico</li>
+      <li>CSS3 Vanilla (sin Bootstrap)</li>
+      <li>Mobile-first desde 375px</li>
+    </ul>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:8px">HTML es el esqueleto de la página (dónde va cada texto, botón e imagen). CSS es el diseño: colores, tamaños, animaciones. No se usó Bootstrap ni ningún kit de diseño externo — todo fue construido a mano para que sea liviano y rápido.</p>
+  </div>
+  <div class="stack-card">
+    <div class="stack-icon">⚡</div>
+    <strong>JavaScript — Lo interactivo</strong>
+    <ul>
+      <li>ES6 Vanilla (sin jQuery)</li>
+      <li>Fetch API para peticiones</li>
+      <li>requestAnimationFrame</li>
+    </ul>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:8px">JavaScript corre directamente en el navegador del usuario y hace todo lo que no requiere recargar la página: actualizar el mapa en tiempo real, mostrar el precio mientras escribes el destino, el chat que recibe mensajes sin refrescar, etc.</p>
+  </div>
+  <div class="stack-card">
+    <div class="stack-icon">🗺️</div>
+    <strong>Google Maps API</strong>
+    <ul>
+      <li>Mapa interactivo</li>
+      <li>Autocomplete de direcciones</li>
+      <li>Cálculo de rutas</li>
+    </ul>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:8px">El mismo servicio que usa la app de Google Maps. Movix lo integra para mostrar el mapa al pedir un viaje, sugerir direcciones mientras el cliente escribe y dibujar la ruta del conductor al destino.</p>
+  </div>
+  <div class="stack-card">
+    <div class="stack-icon">🔔</div>
+    <strong>Firebase FCM — Notificaciones</strong>
+    <ul>
+      <li>Push al conductor</li>
+      <li>Service Worker</li>
+      <li>Funciona en segundo plano</li>
+    </ul>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:8px">Cuando un cliente pide un taxi, el conductor recibe una notificación en su teléfono aunque no tenga la app abierta — como un mensaje de WhatsApp. Eso es Firebase Cloud Messaging (FCM), el servicio de notificaciones de Google.</p>
+  </div>
+  <div class="stack-card">
+    <div class="stack-icon">📧</div>
+    <strong>PHPMailer — Correos</strong>
+    <ul>
+      <li>Verificación de cuenta</li>
+      <li>Recuperación de contraseña</li>
+      <li>Plantillas HTML en emails</li>
+    </ul>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:8px">Librería que envía correos electrónicos desde el servidor. Se usa para enviar el link de verificación cuando te registras, y para restablecer la contraseña si la olvidaste.</p>
+  </div>
+  <div class="stack-card">
+    <div class="stack-icon">📲</div>
+    <strong>PWA — App instalable</strong>
+    <ul>
+      <li>Funciona offline (parcial)</li>
+      <li>Instalable en pantalla de inicio</li>
+      <li>Sin tienda de apps</li>
+    </ul>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:8px">Tecnología que convierte el sitio web en algo que se puede instalar y usar como una app nativa, sin necesitar Google Play ni App Store. El navegador descarga los recursos principales para que cargue rápido.</p>
+  </div>
+</div>
+
+<!-- ARQUITECTURA MVC -->
+<h2 class="section">🏗️ Cómo está organizado el código (Arquitectura MVC)</h2>
+<div class="plain-box">
+  <strong>🧑‍💻 Para no programadores: ¿Qué es MVC?</strong>
+  MVC (Modelo-Vista-Controlador) es una manera de organizar el código para que sea más fácil de mantener. Imagina un restaurante:<br><br>
+  • <strong>Modelo</strong> = La cocina y la despensa. Sabe cómo guardar y obtener información de la base de datos.<br>
+  • <strong>Vista</strong> = El plato que llega a tu mesa. Es el HTML que el usuario ve en pantalla.<br>
+  • <strong>Controlador</strong> = El mesero. Recibe lo que pide el cliente, le dice a la cocina qué preparar, y entrega el resultado.
+</div>
+
+<div class="flow">
+  <div class="flow-step">Usuario hace clic</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">public/index.php recibe la URL</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">routes.php decide a qué Controller ir</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">Controller pide datos al Model</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step green">View muestra el resultado</div>
+</div>
+
+<!-- CREDENCIALES -->
+<h2 class="section" id="credenciales">🔑 Usuarios de prueba <span class="badge badge--dev">Solo en modo desarrollo</span></h2>
+<div class="cred-wrap">
+  <p>⚠️ Estos usuarios solo aparecen en el panel de acceso rápido del login cuando el sistema está en modo <code>development</code>. Para crearlos ejecuta: <code>php sql/crear_usuarios_prueba.php</code></p>
+  <table>
+    <thead><tr><th>Portal</th><th>Correo</th><th>Contraseña</th><th>Función</th></tr></thead>
+    <tbody class="cred">
+      <tr><td>👤 Cliente</td><td>test@movix.com</td><td>Movix1234</td><td>Pedir viajes, ver historial, usar cupones</td></tr>
+      <tr><td>🚗 Conductor</td><td>conductor@movix.com</td><td>Conductor1234</td><td>Tomar viajes, GPS, chat — ya aprobado</td></tr>
+      <tr><td>⚙️ Admin</td><td>admin@movix.com</td><td>Admin1234</td><td>Gestión completa del sistema</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FASES -->
+<h2 class="section" id="fase1">📦 Fases de desarrollo</h2>
+
+<!-- FASE 1 -->
+<div class="fase">
+  <div class="fase-header" onclick="toggle(this)">
+    <div class="fase-num">1</div>
+    <div class="fase-title-wrap">
+      <div class="fase-title">Fase 1 — Base de datos, Rutas y Login <span class="badge badge--done">✅ Completo</span></div>
+      <div class="fase-desc">Los cimientos del sistema: dónde se guarda todo, cómo funciona la navegación y cómo entran los usuarios</div>
+    </div>
+    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="fase-body">
+    <h3 class="sub">📊 Base de datos</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 En palabras simples</strong>
+      La base de datos es como el archivo principal de la empresa. Contiene carpetas (tablas) para: los clientes registrados, los conductores y sus vehículos, cada viaje realizado, los precios por kilómetro, los mensajes de chat, los cupones de descuento, y más. Todo lo que el sistema "recuerda" vive aquí.
+    </div>
+    <ul class="list">
+      <li><strong>usuarios</strong> — clientes registrados (nombre, correo, contraseña cifrada)</li>
+      <li><strong>conductores</strong> — taxistas con sus documentos, estado (pendiente/aprobado), GPS actual</li>
+      <li><strong>vehiculos</strong> — el carro de cada conductor (marca, modelo, placa, fotos)</li>
+      <li><strong>viajes</strong> — cada viaje: quién lo pidió, quién lo llevó, origen, destino, precio, estado</li>
+      <li><strong>tarifas</strong> — precios por km según distancia y horario (día/noche, convencional/VIP)</li>
+      <li><strong>mensajes_chat</strong> — los mensajes entre cliente y conductor durante el viaje</li>
+      <li><strong>cupones / cupones_uso</strong> — códigos de descuento y quién los ha usado</li>
+      <li><strong>notificaciones_viaje</strong> — historial de notificaciones enviadas</li>
+      <li><strong>estadisticas_diarias, comisiones_pagos</strong> — datos para reportes del admin</li>
+      <li><strong>admins</strong> — usuarios del panel de administración</li>
+    </ul>
+
+    <h3 class="sub">🔀 Sistema de rutas (Routing)</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 En palabras simples</strong>
+      Cuando escribes una dirección en el navegador (como <code>movix.com/cliente/historial</code>), el sistema necesita saber qué página mostrarte. El sistema de rutas es como un recepcionista que lee la dirección y te dirige al departamento correcto.
+    </div>
+    <ul class="list">
+      <li>Todas las peticiones llegan a un solo archivo: <code>public/index.php</code></li>
+      <li>Ese archivo lee la URL (<code>/cliente</code>, <code>/admin</code>, <code>/api/viaje/5</code>…)</li>
+      <li>Consulta la tabla de rutas en <code>config/routes.php</code> y llama al Controller correspondiente</li>
+    </ul>
+
+    <h3 class="sub">🔐 Autenticación (Login y registro)</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 En palabras simples</strong>
+      El sistema de login verifica que eres quien dices ser. Las contraseñas nunca se guardan en texto plano — se convierten en un código cifrado (hash) que es imposible revertir. Para recuperar la contraseña, el sistema envía un link único por correo que expira en 1 hora.
+    </div>
+    <ul class="list">
+      <li>Una sola pantalla de login para los 3 portales, con pestañas para cambiar entre ellos</li>
+      <li>Registro de clientes con verificación por correo electrónico (link de activación)</li>
+      <li>Recuperación de contraseña: link de un solo uso que expira en 1 hora</li>
+      <li>Contraseñas protegidas con <strong>bcrypt</strong> (algoritmo de cifrado estándar)</li>
+      <li>Protección CSRF: cada formulario lleva un código secreto único para evitar envíos falsos</li>
+      <li>La sesión expira automáticamente: 4 horas para admins, 8 horas para clientes y conductores</li>
+    </ul>
+
+    <div class="file-grid">
+      <div class="file-chip"><span>SQL</span>sql/movix_schema.sql<div class="desc">Crea todas las tablas de la base de datos</div></div>
+      <div class="file-chip"><span>SQL</span>sql/movix_seed.sql<div class="desc">Datos iniciales: tarifas por defecto, cupones de ejemplo</div></div>
+      <div class="file-chip"><span>Config</span>config/routes.php<div class="desc">Tabla que conecta URLs con controladores</div></div>
+      <div class="file-chip"><span>Config</span>config/session.php<div class="desc">Configuración de seguridad de la sesión</div></div>
+      <div class="file-chip"><span>Controller</span>app/controllers/AuthController.php<div class="desc">Maneja login, registro, verificación y recuperación</div></div>
+      <div class="file-chip"><span>Helper</span>app/helpers/Auth.php<div class="desc">Funciones: ¿está logueado? ¿es conductor? ¿es admin?</div></div>
+      <div class="file-chip"><span>Helper</span>app/helpers/Mailer.php<div class="desc">Envía correos de verificación y recuperación</div></div>
+      <div class="file-chip"><span>View</span>app/views/auth/login.php<div class="desc">Pantalla de login con 3 pestañas y panel dev</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FASE 2 -->
+<div class="fase">
+  <div class="fase-header" onclick="toggle(this)">
+    <div class="fase-num">2</div>
+    <div class="fase-title-wrap">
+      <div class="fase-title">Fase 2 — Portal del Cliente <span class="badge badge--done">✅ Completo</span></div>
+      <div class="fase-desc">Todo lo que necesita un pasajero: pedir taxi, ver precio, seguir el viaje, historial</div>
+    </div>
+    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="fase-body">
+    <h3 class="sub">🗺️ Pantalla principal — Pedir un viaje</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      El cliente abre la app y ve un mapa de Tegucigalpa. Escribe su destino (con sugerencias automáticas al estilo Google Maps), el mapa dibuja la ruta y calcula el precio en tiempo real. El cliente elige tipo de taxi (Convencional o VIP) y cuántos pasajeros van. Al confirmar, el sistema busca automáticamente al conductor más cercano disponible.
+    </div>
+    <ul class="list">
+      <li>Mapa interactivo con Google Maps — muestra la posición actual del cliente y el destino</li>
+      <li>Autocomplete de direcciones: al escribir, sugiere calles y lugares de Tegucigalpa</li>
+      <li>Precio calculado antes de confirmar (sin sorpresas)</li>
+      <li>Selector de tipo de servicio: <strong>Convencional</strong> o <strong>VIP</strong></li>
+      <li>Selector de pasajeros: 1 a 4 personas</li>
+      <li>Opción "Ida y vuelta" con precio ajustado</li>
+      <li>Campo para ingresar cupón de descuento</li>
+      <li>Overlay "Buscando conductor…" mientras el sistema asigna automáticamente</li>
+    </ul>
+
+    <h3 class="sub">📋 Otras secciones del portal cliente</h3>
+    <ul class="list">
+      <li><strong>Historial de viajes:</strong> lista paginada de todos los viajes anteriores con fecha, destino y precio</li>
+      <li><strong>Perfil:</strong> cambiar nombre y teléfono</li>
+      <li><strong>Barra de navegación inferior:</strong> Inicio / Historial / Perfil / Salir — siempre visible en la parte de abajo del teléfono</li>
+    </ul>
+
+    <div class="file-grid">
+      <div class="file-chip"><span>Controller</span>app/controllers/ClienteController.php<div class="desc">Lógica: mostrar mapa, procesar solicitud, historial, perfil</div></div>
+      <div class="file-chip"><span>View</span>app/views/cliente/inicio.php<div class="desc">Pantalla principal con mapa y formulario de viaje</div></div>
+      <div class="file-chip"><span>View</span>app/views/cliente/historial.php<div class="desc">Lista de viajes anteriores</div></div>
+      <div class="file-chip"><span>View</span>app/views/cliente/perfil.php<div class="desc">Editar datos personales</div></div>
+      <div class="file-chip"><span>JS</span>public/assets/js/viaje.js<div class="desc">Toda la lógica del formulario de solicitud de viaje</div></div>
+      <div class="file-chip"><span>JS</span>public/assets/js/maps.js<div class="desc">Integración con Google Maps: mapa, marcadores, ruta</div></div>
+      <div class="file-chip"><span>CSS</span>public/assets/css/cliente.css<div class="desc">Diseño visual del portal cliente</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FASE 3 -->
+<div class="fase">
+  <div class="fase-header" onclick="toggle(this)">
+    <div class="fase-num">3</div>
+    <div class="fase-title-wrap">
+      <div class="fase-title">Fase 3 — Portal del Conductor <span class="badge badge--done">✅ Completo</span></div>
+      <div class="fase-desc">La app del taxista: registro con documentos, activarse/desactivarse, aceptar y completar viajes</div>
+    </div>
+    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="fase-body">
+    <h3 class="sub">📝 Registro del conductor</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      Un conductor nuevo llena un formulario con sus datos personales, los datos de su vehículo y sube fotos de sus documentos. Su cuenta queda en estado "Pendiente" hasta que un administrador revise los documentos y la apruebe. Solo entonces podrá empezar a recibir viajes.
+    </div>
+    <ul class="list">
+      <li>Datos personales: nombre, fecha de nacimiento, número de identidad, teléfono, correo, contraseña</li>
+      <li>Datos del vehículo: marca, modelo, año, placa, color, número de taxi (opcional)</li>
+      <li>Tipo de servicio: Convencional o VIP</li>
+      <li>Documentos subidos: foto de perfil, identidad (frente y reverso), licencia de conducir (frente y reverso), foto del vehículo</li>
+      <li>Estado inicial: <strong>Pendiente</strong> — el admin debe aprobar antes de que pueda operar</li>
+    </ul>
+
+    <h3 class="sub">📍 Dashboard del conductor (Pantalla principal)</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      Una vez aprobado, el conductor entra a su app y ve un interruptor "Conectado / Desconectado". Cuando lo activa, el sistema empieza a enviar su ubicación GPS al servidor cada 15 segundos. Así, cuando un cliente pide un taxi, el sistema puede encontrar al conductor disponible más cercano.
+    </div>
+    <ul class="list">
+      <li>Interruptor visual <strong>Online/Offline</strong> (toggle verde animado)</li>
+      <li>Cuando está Online: el GPS del teléfono envía la posición cada 15 segundos al servidor</li>
+      <li>Lista de viajes pendientes disponibles para tomar</li>
+      <li>Botones de acción: <strong>Tomar viaje → Iniciar viaje → Completar viaje</strong></li>
+      <li>Si tiene un viaje activo, muestra los datos del cliente y el destino</li>
+      <li>Historial de viajes realizados</li>
+      <li>Perfil: editar teléfono</li>
+    </ul>
+
+    <div class="file-grid">
+      <div class="file-chip"><span>Controller</span>app/controllers/ConductorController.php<div class="desc">Registro, dashboard, tomar/completar viajes, historial, perfil, subida de documentos</div></div>
+      <div class="file-chip"><span>View</span>app/views/conductor/inicio.php<div class="desc">Dashboard con toggle online, viajes disponibles, viaje activo, chat</div></div>
+      <div class="file-chip"><span>View</span>app/views/conductor/registro.php<div class="desc">Formulario de registro con sección de documentos</div></div>
+      <div class="file-chip"><span>JS</span>public/assets/js/gps.js<div class="desc">Obtiene GPS del teléfono y lo envía al servidor cada 15s</div></div>
+      <div class="file-chip"><span>CSS</span>public/assets/css/conductor.css<div class="desc">Diseño del portal conductor: topbar verde, toggle, cards de viaje</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FASE 4 -->
+<div class="fase">
+  <div class="fase-header" onclick="toggle(this)">
+    <div class="fase-num">4</div>
+    <div class="fase-title-wrap">
+      <div class="fase-title">Fase 4 — Panel de Administración <span class="badge badge--done">✅ Completo</span></div>
+      <div class="fase-desc">Control total del sistema: conductores, precios, viajes, clientes, estadísticas</div>
+    </div>
+    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="fase-body">
+    <h3 class="sub">📊 Dashboard (Pantalla principal del admin)</h3>
+    <ul class="list">
+      <li>Tarjetas con números del día: viajes totales, ingresos, conductores activos, clientes registrados</li>
+      <li>Dos gráficas: viajes de los últimos 30 días e ingresos de los últimos 30 días</li>
+      <li>Accesos rápidos a las secciones principales</li>
+    </ul>
+
+    <h3 class="sub">🚗 Gestión de conductores</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona la aprobación</strong>
+      Cuando un conductor se registra, el admin recibe su solicitud en esta sección. Puede ver todos sus datos, revisar las fotos de sus documentos (identidad, licencia, foto del vehículo) y tomar una acción: Aprobar (puede trabajar), Rechazar (no cumple requisitos) o Suspender (fue aprobado pero se suspende temporalmente).
+    </div>
+    <ul class="list">
+      <li>Lista de todos los conductores con su estado (Pendiente / Aprobado / Rechazado / Suspendido)</li>
+      <li>Página de detalle con todos los datos personales, del vehículo y documentos subidos</li>
+      <li>Acciones: <strong>Aprobar / Rechazar / Suspender</strong> con un clic</li>
+    </ul>
+
+    <h3 class="sub">💰 Gestión de tarifas</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      Los precios no son fijos — varían según la distancia y la hora del día (más caro de noche). El admin puede editar directamente en la tabla los precios por tramo de kilómetros. Por ejemplo: "de 0 a 3 km: L. 50, de 3 a 8 km: L. 80, más de 8 km: L. 120" — tanto para Convencional como VIP, de día y de noche.
+    </div>
+
+    <h3 class="sub">🎟️ Gestión de cupones</h3>
+    <ul class="list">
+      <li>Crear cupones con código personalizado, porcentaje de descuento y fecha de vencimiento</li>
+      <li>Activar o desactivar cupones con un interruptor</li>
+      <li>Ver cuántas veces se ha usado cada cupón</li>
+    </ul>
+
+    <h3 class="sub">📋 Lista de viajes y clientes</h3>
+    <ul class="list">
+      <li>Todos los viajes del sistema filtrados por estado</li>
+      <li>Lista de clientes registrados con estadísticas de uso</li>
+      <li>Menú lateral (sidebar) que en móvil se cierra con un toque fuera</li>
+    </ul>
+
+    <div class="file-grid">
+      <div class="file-chip"><span>Controller</span>app/controllers/AdminController.php<div class="desc">Dashboard, conductores, tarifas, viajes, clientes, cupones</div></div>
+      <div class="file-chip"><span>View</span>app/views/admin/dashboard.php<div class="desc">Pantalla principal con KPIs y gráficas</div></div>
+      <div class="file-chip"><span>View</span>app/views/admin/conductor_detalle.php<div class="desc">Detalle del conductor con sus documentos y acciones</div></div>
+      <div class="file-chip"><span>View</span>app/views/admin/tarifas.php<div class="desc">Tabla editable de precios por kilómetro</div></div>
+      <div class="file-chip"><span>View</span>app/views/admin/cupones.php<div class="desc">CRUD de cupones de descuento</div></div>
+      <div class="file-chip"><span>CSS</span>public/assets/css/admin.css<div class="desc">Diseño del panel admin: sidebar, tablas, badges</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FASE 5 -->
+<div class="fase">
+  <div class="fase-header" onclick="toggle(this)">
+    <div class="fase-num">5</div>
+    <div class="fase-title-wrap">
+      <div class="fase-title">Fase 5 — GPS en Tiempo Real y Asignación Automática <span class="badge badge--done">✅ Completo</span></div>
+      <div class="fase-desc">El conductor aparece en el mapa moviéndose, y el sistema encuentra al taxista más cercano automáticamente</div>
+    </div>
+    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="fase-body">
+    <h3 class="sub">🤖 Asignación automática del conductor</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      Cuando un cliente pide un taxi, el sistema hace un cálculo matemático para encontrar al conductor disponible MÁS CERCANO en un radio de 10 km. Usa una fórmula llamada "Haversine" que calcula la distancia real entre dos puntos del mapa usando sus coordenadas GPS (latitud y longitud). No es necesario un conductor humano asignando viajes — todo es automático.
+    </div>
+    <ul class="list">
+      <li>Radio de búsqueda: 10 km alrededor del cliente</li>
+      <li>Solo busca conductores: Online, Aprobados, del mismo tipo (Convencional/VIP) y sin viaje activo</li>
+      <li>Si no encuentra conductor, el viaje queda en espera</li>
+      <li>Al asignar, envía una notificación push al teléfono del conductor</li>
+    </ul>
+
+    <h3 class="sub">📍 Seguimiento del conductor en tiempo real</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      Una vez asignado el conductor, el cliente ve un mapa con el ícono del carro moviéndose hacia él. Esto funciona así: cada 5 segundos, el navegador le pregunta al servidor "¿dónde está el conductor ahora?", y si cambió de posición, el ícono en el mapa se anima suavemente hasta la nueva posición (como un GPS de rastreo en tiempo real). También muestra el tiempo estimado de llegada (ETA).
+    </div>
+    <ul class="list">
+      <li>El ícono del conductor se mueve suavemente en el mapa (animación de 20 pasos)</li>
+      <li>ETA actualizado: calcula cuántos minutos faltan según la distancia actual a velocidad promedio urbana</li>
+      <li>Estados visibles: "Conductor en camino" → "Conductor llegó" → "Viaje en curso" → "Completado"</li>
+      <li>Cuando el viaje termina, la página se recarga automáticamente</li>
+    </ul>
+
+    <div class="file-grid">
+      <div class="file-chip"><span>Model</span>app/models/Conductor.php → findNearestAvailable()<div class="desc">Consulta SQL que encuentra al conductor más cercano</div></div>
+      <div class="file-chip"><span>API</span>app/controllers/ApiController.php → /api/viaje/{id}<div class="desc">Devuelve posición del conductor, estado y ETA</div></div>
+      <div class="file-chip"><span>JS</span>public/assets/js/tracking.js<div class="desc">Actualiza el mapa cada 5s con la posición del conductor</div></div>
+      <div class="file-chip"><span>View</span>app/views/cliente/viaje_activo.php<div class="desc">Pantalla de seguimiento del viaje con mapa y chat</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FASE 6 -->
+<div class="fase">
+  <div class="fase-header" onclick="toggle(this)">
+    <div class="fase-num">6</div>
+    <div class="fase-title-wrap">
+      <div class="fase-title">Fase 6 — Chat, Cupones, Gráficas y Notificaciones Push <span class="badge badge--done">✅ Completo</span></div>
+      <div class="fase-desc">Comunicación entre cliente y conductor, descuentos, estadísticas visuales y notificaciones al teléfono</div>
+    </div>
+    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="fase-body">
+    <h3 class="sub">💬 Chat entre cliente y conductor</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      Durante el viaje, el cliente y el conductor pueden enviarse mensajes de texto. Funciona como un chat básico tipo WhatsApp, pero sin usar WhatsApp. La pantalla del cliente y la del conductor se actualizan automáticamente cada 4 segundos para mostrar mensajes nuevos, sin necesidad de recargar la página.
+    </div>
+    <ul class="list">
+      <li>Chat disponible mientras el viaje está en curso (asignado o en_curso)</li>
+      <li>Globos de chat: mensajes propios a la derecha (azul), recibidos a la izquierda (gris)</li>
+      <li>Contador de mensajes sin leer en la pestaña del chat</li>
+      <li>Máximo 500 caracteres por mensaje</li>
+    </ul>
+
+    <h3 class="sub">🎟️ Cupones de descuento</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      El admin crea cupones con un código (ej: BIENVENIDO) y un porcentaje de descuento. El cliente escribe el código antes de confirmar el viaje, y el sistema valida que sea válido, no haya vencido y no lo haya usado antes. Si todo está bien, el precio baja automáticamente. Al completar el viaje, el cupón se marca como "usado" para ese cliente.
+    </div>
+    <ul class="list">
+      <li><strong>BIENVENIDO</strong>: 20% de descuento (incluido en datos de prueba)</li>
+      <li><strong>MOVIX10</strong>: 10% de descuento (incluido en datos de prueba)</li>
+      <li>Validación doble: primero en el navegador (inmediata), luego en el servidor (segura)</li>
+      <li>Protección anti-fraude: un cliente no puede usar el mismo cupón dos veces</li>
+    </ul>
+
+    <h3 class="sub">📈 Gráficas de estadísticas</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      El dashboard del admin muestra dos gráficas de líneas: una con la cantidad de viajes por día en los últimos 30 días, y otra con los ingresos. Estas gráficas fueron construidas completamente a mano, sin usar ninguna librería externa como Chart.js — usando directamente el elemento "canvas" de HTML5.
+    </div>
+
+    <h3 class="sub">🔔 Notificaciones push (Firebase FCM)</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      Cuando un cliente pide un taxi y el sistema lo asigna a un conductor, ese conductor recibe una notificación en su teléfono aunque la app no esté abierta — igual que cuando recibes un WhatsApp con la pantalla apagada. Esto funciona gracias a Firebase Cloud Messaging (FCM), el servicio de notificaciones push de Google.
+    </div>
+
+    <div class="file-grid">
+      <div class="file-chip"><span>Model</span>app/models/Chat.php<div class="desc">Guardar y obtener mensajes del chat</div></div>
+      <div class="file-chip"><span>Model</span>app/models/Cupon.php<div class="desc">Validar, aplicar y gestionar cupones</div></div>
+      <div class="file-chip"><span>Service</span>app/services/FcmService.php<div class="desc">Envía notificaciones push a los conductores</div></div>
+      <div class="file-chip"><span>JS</span>public/assets/js/chat.js<div class="desc">Actualiza el chat cada 4s y muestra mensajes nuevos</div></div>
+      <div class="file-chip"><span>JS</span>public/assets/js/charts.js<div class="desc">Dibuja las gráficas del admin sin librerías externas</div></div>
+      <div class="file-chip"><span>SQL</span>sql/fase6_migration.sql<div class="desc">Agrega la columna viaje_id a la tabla mensajes_chat</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FASE 7 -->
+<div class="fase">
+  <div class="fase-header" onclick="toggle(this)">
+    <div class="fase-num">7</div>
+    <div class="fase-title-wrap">
+      <div class="fase-title">Fase 7 — App Instalable, Seguridad y Configuración de Producción <span class="badge badge--done">✅ Completo</span></div>
+      <div class="fase-desc">Convierte el sitio en una app instalable, protege contra ataques y prepara todo para el servidor real</div>
+    </div>
+    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="fase-body">
+    <h3 class="sub">📲 PWA — Progressive Web App (App instalable)</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      Cuando un usuario abre Movix en Chrome en su teléfono Android, el navegador detecta que el sitio cumple los requisitos para ser instalado como app. Aparece un banner "¿Instalar Movix?" y si acepta, la app queda en la pantalla de inicio del teléfono con su ícono azul, abre en pantalla completa sin la barra del navegador y carga rápidamente porque guarda los recursos en el teléfono.
+    </div>
+    <ul class="list">
+      <li><strong>manifest.json:</strong> le dice al navegador cómo debe verse la app instalada (nombre, ícono, colores)</li>
+      <li><strong>ícono SVG:</strong> la letra "M" de Movix en fondo azul con barra roja — el ícono que aparece en la pantalla de inicio</li>
+      <li><strong>Service Worker (sw.js):</strong> un script que corre en segundo plano y guarda en caché los archivos CSS/JS/imágenes para que carguen instantáneamente. Las páginas HTML NO se cachean (para que el logout funcione correctamente)</li>
+      <li><strong>Botón "Instalar app":</strong> aparece en el portal cliente cuando el navegador soporta la instalación</li>
+    </ul>
+
+    <h3 class="sub">🔒 Seguridad</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Por qué es importante</strong>
+      Un sistema de taxi maneja datos personales y ubicaciones de personas. Es fundamental protegerlo contra intentos de hackeo. Se implementaron varias capas de protección.
+    </div>
+    <ul class="list">
+      <li><strong>Rate Limiting:</strong> si alguien intenta adivinar una contraseña, se bloquea después de 5 intentos fallidos durante 15 minutos. Protege contra ataques de fuerza bruta.</li>
+      <li><strong>CSP (Content Security Policy):</strong> regla que dice exactamente de qué sitios externos puede cargar recursos el navegador. Evita que alguien inyecte código malicioso.</li>
+      <li><strong>CSRF Protection:</strong> cada formulario lleva un código secreto único. Si alguien intenta enviarte a una página trampa que envíe un formulario, el código no coincidirá y se rechaza.</li>
+      <li><strong>HTTPS redirect:</strong> configurado y listo para activar en producción — redirige todo tráfico HTTP a HTTPS (conexión cifrada)</li>
+    </ul>
+
+    <h3 class="sub">🚀 Configuración para producción</h3>
+    <ul class="list">
+      <li><strong>nginx.conf.example:</strong> plantilla completa de configuración para el servidor web Nginx con SSL, compresión y caché</li>
+      <li><strong>.env.example:</strong> template con todas las variables que hay que configurar (base de datos, API keys, correo) con comentarios explicativos</li>
+      <li><strong>.gitignore:</strong> protege para que contraseñas y logs nunca se suban a GitHub</li>
+    </ul>
+
+    <div class="file-grid">
+      <div class="file-chip"><span>PWA</span>public/manifest.json<div class="desc">Define nombre, ícono y comportamiento de la app instalada</div></div>
+      <div class="file-chip"><span>PWA</span>public/sw.js<div class="desc">Service Worker: caché de assets, mensajes FCM en segundo plano</div></div>
+      <div class="file-chip"><span>PWA</span>public/assets/js/pwa.js<div class="desc">Registra el SW y muestra el botón "Instalar app"</div></div>
+      <div class="file-chip"><span>Seguridad</span>app/helpers/RateLimit.php<div class="desc">Bloquea IPs con demasiados intentos de login fallidos</div></div>
+      <div class="file-chip"><span>Seguridad</span>public/.htaccess<div class="desc">Reglas de seguridad para el servidor Apache</div></div>
+      <div class="file-chip"><span>Deploy</span>nginx.conf.example<div class="desc">Config del servidor web para producción con SSL</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUBIDA DE DOCUMENTOS -->
+<div class="fase">
+  <div class="fase-header" onclick="toggle(this)">
+    <div class="fase-num--extra fase-num">📎</div>
+    <div class="fase-title-wrap">
+      <div class="fase-title">Subida de documentos del conductor <span class="badge badge--new">✅ Implementado</span></div>
+      <div class="fase-desc">El conductor adjunta sus documentos al registrarse; el admin los revisa antes de aprobar la cuenta</div>
+    </div>
+    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="fase-body">
+    <h3 class="sub">📄 ¿Qué documentos sube el conductor?</h3>
+    <div class="plain-box">
+      <strong>🧑‍💻 Cómo funciona</strong>
+      Al registrarse, el conductor llena el formulario normal (datos personales y del vehículo) y al final tiene una sección para adjuntar fotos o archivos PDF. Una vez enviado, el sistema guarda los archivos de forma segura en el servidor y el admin puede verlos en el detalle del conductor para tomar la decisión de aprobar o rechazar.
+    </div>
+
+    <table style="margin-top:8px">
+      <thead><tr><th>Documento</th><th>Obligatorio</th><th>Formatos</th><th>Para qué sirve</th></tr></thead>
+      <tbody>
+        <tr><td>📸 Foto de perfil</td><td>✅ Sí</td><td>JPEG, PNG</td><td>Identificar al conductor en la app del cliente</td></tr>
+        <tr><td>🪪 Identidad — frente</td><td>✅ Sí</td><td>JPEG, PNG, PDF</td><td>Verificar identidad del conductor</td></tr>
+        <tr><td>🪪 Identidad — reverso</td><td>✅ Sí</td><td>JPEG, PNG, PDF</td><td>Verificar identidad del conductor</td></tr>
+        <tr><td>📄 Licencia — frente</td><td>✅ Sí</td><td>JPEG, PNG, PDF</td><td>Confirmar que tiene licencia vigente</td></tr>
+        <tr><td>📄 Licencia — reverso</td><td>✅ Sí</td><td>JPEG, PNG, PDF</td><td>Ver categoría y vencimiento</td></tr>
+        <tr><td>🚗 Foto vehículo — frente</td><td>✅ Sí</td><td>JPEG, PNG</td><td>Verificar que el vehículo corresponde</td></tr>
+        <tr><td>🚗 Foto vehículo — atrás</td><td>No</td><td>JPEG, PNG</td><td>Vista adicional del vehículo</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub" style="margin-top:16px">🔐 Seguridad de los archivos</h3>
+    <ul class="list">
+      <li>Cada archivo recibe un nombre aleatorio de 32 caracteres (ej: <code>a3f7c2d1...</code>) — nadie puede adivinar la URL</li>
+      <li>Tamaño máximo: <strong>8 MB por archivo</strong></li>
+      <li>El sistema verifica el tipo real del archivo (no solo la extensión) — no se puede subir un .exe renombrado como .jpg</li>
+      <li>Si algún documento falla, los que ya se habían subido se eliminan automáticamente (sin archivos huérfanos)</li>
+      <li>Los archivos se guardan en <code>public/uploads/</code> con un .htaccess que bloquea la ejecución de PHP dentro de esa carpeta</li>
+    </ul>
+
+    <h3 class="sub">👁️ Revisión por el admin</h3>
+    <ul class="list">
+      <li>En la página de detalle de cada conductor, el admin ve una galería con miniaturas de todas las fotos</li>
+      <li>Al hacer clic en una miniatura, se abre la imagen en tamaño completo en una nueva pestaña</li>
+      <li>Los PDFs se muestran con un ícono de documento y un link "Ver PDF"</li>
+      <li>Con toda la información visible, el admin puede Aprobar, Rechazar o Suspender al conductor</li>
+    </ul>
+
+    <div class="file-grid">
+      <div class="file-chip"><span>Controller</span>app/controllers/ConductorController.php → subirArchivo()<div class="desc">Valida y guarda cada archivo de forma segura</div></div>
+      <div class="file-chip"><span>Controller</span>app/controllers/ConductorController.php → limpiarUploads()<div class="desc">Elimina archivos subidos si el registro falla a mitad</div></div>
+      <div class="file-chip"><span>Model</span>app/models/Conductor.php → crear()<div class="desc">Guarda las rutas de los documentos en la base de datos</div></div>
+      <div class="file-chip"><span>Model</span>app/models/Vehiculo.php → crear()<div class="desc">Guarda las fotos del vehículo en la base de datos</div></div>
+      <div class="file-chip"><span>View</span>app/views/conductor/registro.php<div class="desc">Formulario de registro con sección de subida de archivos</div></div>
+      <div class="file-chip"><span>View</span>app/views/admin/conductor_detalle.php<div class="desc">Galería de documentos para revisión del admin</div></div>
+      <div class="file-chip"><span>Config</span>public/uploads/.htaccess<div class="desc">Bloquea ejecución de PHP dentro de la carpeta de uploads</div></div>
+      <div class="file-chip"><span>CSS</span>public/assets/css/mobile.css → .file-upload<div class="desc">Componente visual del selector de archivos</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BUGFIXES -->
+<div class="fase">
+  <div class="fase-header" onclick="toggle(this)">
+    <div class="fase-num--fix fase-num">🔧</div>
+    <div class="fase-title-wrap">
+      <div class="fase-title">Correcciones de bugs <span class="badge badge--fix">Corregidos</span></div>
+      <div class="fase-desc">Problemas encontrados durante las pruebas y cómo se resolvieron</div>
+    </div>
+    <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="fase-body">
+    <table>
+      <thead><tr><th>Problema</th><th>Causa</th><th>Solución</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Cliente atrapado en "Buscando conductor" sin poder cancelar</td>
+          <td>Los botones "Cancelar" y "Volver" estaban al fondo de la pantalla, fuera de la vista en móviles pequeños</td>
+          <td>Se movieron al inicio de la pantalla para que siempre sean visibles</td>
+        </tr>
+        <tr>
+          <td>Botón "Cancelar" no aparecía para viajes ya asignados</td>
+          <td>El código solo mostraba el botón para viajes en estado "pendiente", no para "asignado"</td>
+          <td>Se amplió para mostrar el botón en ambos estados</td>
+        </tr>
+        <tr>
+          <td>El cliente no podía cerrar sesión desde el portal</td>
+          <td>El menú de navegación del cliente no tenía botón de "Salir"</td>
+          <td>Se agregó "Salir" como quinto ítem del menú inferior</td>
+        </tr>
+        <tr>
+          <td>Después de cerrar sesión, la app seguía mostrando la pantalla anterior</td>
+          <td>El Service Worker estaba guardando las páginas en caché, incluidas las que requieren login</td>
+          <td>Se configuró el SW para que NUNCA guarde páginas HTML — solo archivos CSS, JS e imágenes</td>
+        </tr>
+        <tr>
+          <td>Error en la consulta SQL de asignación automática</td>
+          <td>PDO no permite usar el mismo nombre de parámetro dos veces en la misma consulta (ej: <code>:lat</code>)</td>
+          <td>Se usaron nombres distintos <code>:lat_a</code> y <code>:lat_b</code> con el mismo valor</td>
+        </tr>
+        <tr>
+          <td>El archivo manifest.json era bloqueado y la PWA no funcionaba</td>
+          <td>Una regla de seguridad bloqueaba todos los archivos .json, incluyendo el necesario para la PWA</td>
+          <td>Se ajustó la regla para bloquear solo los archivos sensibles específicos</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MAPA DE ARCHIVOS -->
+<h2 class="section" id="archivos">📁 Mapa completo de archivos</h2>
+<p class="section-intro" style="color:var(--muted);font-size:.9rem;margin-bottom:14px">Descripción de cada archivo del proyecto y para qué sirve. Los archivos en <code>vendor/</code> (librerías externas) no se incluyen.</p>
+
+<table>
+  <thead><tr><th>Archivo</th><th>Tipo</th><th>Para qué sirve</th></tr></thead>
+  <tbody>
+    <tr><td><code>public/index.php</code></td><td>Entrada</td><td>El único punto de entrada al sistema. Recibe todas las peticiones, carga librerías y redirige al controller correcto según la URL</td></tr>
+    <tr><td><code>config/routes.php</code></td><td>Config</td><td>Tabla que dice: "si la URL es /cliente, llama a ClienteController"</td></tr>
+    <tr><td><code>config/app.php</code></td><td>Config</td><td>Constantes globales: rutas de carpetas, URL base, modo desarrollo/producción</td></tr>
+    <tr><td><code>config/session.php</code></td><td>Config</td><td>Configura la sesión del usuario: seguridad, cookies, tiempo de expiración</td></tr>
+    <tr><td><code>config/database.php</code></td><td>Config</td><td>Conexión a la base de datos MySQL (singleton — solo se conecta una vez)</td></tr>
+    <tr><td><code>app/controllers/Controller.php</code></td><td>Base</td><td>Clase padre de todos los controllers. Tiene funciones comunes: mostrar vista, redirigir, responder JSON, verificar CSRF</td></tr>
+    <tr><td><code>app/controllers/AuthController.php</code></td><td>Controller</td><td>Maneja: login de 3 portales, registro de clientes, verificación de email, recuperar contraseña, logout, protección de intentos fallidos</td></tr>
+    <tr><td><code>app/controllers/ClienteController.php</code></td><td>Controller</td><td>Todo lo del portal cliente: mostrar mapa, solicitar viaje, ver viaje activo, cancelar, historial, perfil</td></tr>
+    <tr><td><code>app/controllers/ConductorController.php</code></td><td>Controller</td><td>Portal conductor: registro con documentos, dashboard, tomar/iniciar/completar viaje, historial, perfil, subida y validación de archivos</td></tr>
+    <tr><td><code>app/controllers/AdminController.php</code></td><td>Controller</td><td>Panel admin: estadísticas, gestión de conductores, tarifas, viajes, clientes, cupones</td></tr>
+    <tr><td><code>app/controllers/ApiController.php</code></td><td>Controller</td><td>Endpoints de datos para JavaScript: precio, estado del viaje, posición del conductor, chat, cupones, token FCM</td></tr>
+    <tr><td><code>app/models/Model.php</code></td><td>Base</td><td>Clase padre de todos los modelos. Tiene la conexión a la base de datos</td></tr>
+    <tr><td><code>app/models/Usuario.php</code></td><td>Model</td><td>Crear usuario, buscar por email, verificar cuenta, guardar token de recuperación</td></tr>
+    <tr><td><code>app/models/Conductor.php</code></td><td>Model</td><td>CRUD de conductores, buscar el más cercano, actualizar GPS, guardar token FCM, guardar documentos</td></tr>
+    <tr><td><code>app/models/Vehiculo.php</code></td><td>Model</td><td>Crear vehículo del conductor, buscar por placa, guardar fotos del vehículo</td></tr>
+    <tr><td><code>app/models/Viaje.php</code></td><td>Model</td><td>Crear viaje, cambiar estado (pendiente→asignado→en_curso→completado), cancelar, historial</td></tr>
+    <tr><td><code>app/models/Tarifa.php</code></td><td>Model</td><td>Calcular precio según kilómetros y tipo de servicio, CRUD de tarifas para el admin</td></tr>
+    <tr><td><code>app/models/Chat.php</code></td><td>Model</td><td>Guardar mensajes, obtener mensajes desde un ID (para polling incremental), marcar como leídos</td></tr>
+    <tr><td><code>app/models/Cupon.php</code></td><td>Model</td><td>Validar cupón (activo, no vencido, no usado), aplicar descuento, listar para admin</td></tr>
+    <tr><td><code>app/models/Admin.php</code></td><td>Model</td><td>Login de admins, estadísticas de los últimos 30 días para las gráficas</td></tr>
+    <tr><td><code>app/helpers/Auth.php</code></td><td>Helper</td><td>Funciones de sesión: ¿está logueado?, ¿es cliente/conductor/admin?, obtener ID del usuario</td></tr>
+    <tr><td><code>app/helpers/RateLimit.php</code></td><td>Helper</td><td>Controla intentos de login: bloquea una IP después de 5 fallos en 15 minutos</td></tr>
+    <tr><td><code>app/helpers/Mailer.php</code></td><td>Helper</td><td>Envía correos con PHPMailer: email de verificación y de recuperación de contraseña</td></tr>
+    <tr><td><code>app/helpers/Response.php</code></td><td>Helper</td><td>Funciones para responder con JSON correctamente formateado</td></tr>
+    <tr><td><code>app/services/FcmService.php</code></td><td>Service</td><td>Envía notificaciones push al teléfono del conductor usando Firebase</td></tr>
+    <tr><td><code>app/views/layouts/auth.php</code></td><td>Layout</td><td>Plantilla HTML para login y registro: sin menú, con fondo degradado azul</td></tr>
+    <tr><td><code>app/views/layouts/cliente.php</code></td><td>Layout</td><td>Plantilla del portal cliente: menú inferior de 5 ítems, botón de instalar app</td></tr>
+    <tr><td><code>app/views/layouts/conductor.php</code></td><td>Layout</td><td>Plantilla del portal conductor: barra superior verde, menú inferior, Firebase FCM</td></tr>
+    <tr><td><code>app/views/layouts/admin.php</code></td><td>Layout</td><td>Plantilla del admin: sidebar lateral con navegación, menú hamburguesa para móvil</td></tr>
+    <tr><td><code>app/views/auth/login.php</code></td><td>Vista</td><td>Pantalla de login con pestañas (Cliente/Conductor/Admin) y panel de acceso rápido en desarrollo</td></tr>
+    <tr><td><code>app/views/auth/registro_cliente.php</code></td><td>Vista</td><td>Formulario de registro para clientes con validación</td></tr>
+    <tr><td><code>app/views/cliente/inicio.php</code></td><td>Vista</td><td>Pantalla principal del cliente: mapa, formulario de viaje, overlay de búsqueda</td></tr>
+    <tr><td><code>app/views/cliente/viaje_activo.php</code></td><td>Vista</td><td>Seguimiento del viaje: mapa con conductor en tiempo real, ETA, chat, botón cancelar</td></tr>
+    <tr><td><code>app/views/conductor/inicio.php</code></td><td>Vista</td><td>Dashboard del conductor: toggle online, viajes disponibles, viaje activo, chat</td></tr>
+    <tr><td><code>app/views/conductor/registro.php</code></td><td>Vista</td><td>Formulario de registro con datos personales, vehículo y subida de documentos</td></tr>
+    <tr><td><code>app/views/admin/dashboard.php</code></td><td>Vista</td><td>Panel principal del admin con KPIs y gráficas de los últimos 30 días</td></tr>
+    <tr><td><code>app/views/admin/conductor_detalle.php</code></td><td>Vista</td><td>Detalle de un conductor: datos, vehículo, galería de documentos, botones de acción</td></tr>
+    <tr><td><code>app/views/admin/tarifas.php</code></td><td>Vista</td><td>Tabla editable de precios por kilómetro</td></tr>
+    <tr><td><code>public/assets/js/viaje.js</code></td><td>JS</td><td>Toda la lógica del formulario de solicitud: búsqueda de destino, precio en tiempo real, cupón, envío de solicitud</td></tr>
+    <tr><td><code>public/assets/js/tracking.js</code></td><td>JS</td><td>Seguimiento GPS: actualiza el mapa cada 5s, anima el ícono del conductor suavemente, muestra ETA</td></tr>
+    <tr><td><code>public/assets/js/maps.js</code></td><td>JS</td><td>Inicializa Google Maps, marcadores de origen/destino, autocomplete de direcciones, dibuja la ruta</td></tr>
+    <tr><td><code>public/assets/js/gps.js</code></td><td>JS</td><td>En el conductor: obtiene GPS del teléfono y envía la posición al servidor cada 15 segundos</td></tr>
+    <tr><td><code>public/assets/js/chat.js</code></td><td>JS</td><td>Chat en tiempo real: consulta mensajes nuevos cada 4s, dibuja globos, cuenta sin leer</td></tr>
+    <tr><td><code>public/assets/js/charts.js</code></td><td>JS</td><td>Dibuja las gráficas del admin sin librerías externas, con gradiente y puntos de datos</td></tr>
+    <tr><td><code>public/assets/js/pwa.js</code></td><td>JS</td><td>Registra el Service Worker y captura el evento de instalación de la PWA</td></tr>
+    <tr><td><code>public/assets/js/admin.js</code></td><td>JS</td><td>Controla el sidebar del admin: abrir/cerrar, overlay en móvil</td></tr>
+    <tr><td><code>public/assets/css/variables.css</code></td><td>CSS</td><td>Todas las variables de diseño: colores, tamaños de texto, espaciados, sombras</td></tr>
+    <tr><td><code>public/assets/css/base.css</code></td><td>CSS</td><td>Reset global y estilos base que aplican a toda la app</td></tr>
+    <tr><td><code>public/assets/css/mobile.css</code></td><td>CSS</td><td>Componentes reutilizables: botones, inputs, alertas, formularios, selector de archivos, portal auth</td></tr>
+    <tr><td><code>public/assets/css/cliente.css</code></td><td>CSS</td><td>Diseño específico del portal cliente: mapa, bottom sheet, cards de viaje</td></tr>
+    <tr><td><code>public/assets/css/conductor.css</code></td><td>CSS</td><td>Diseño del portal conductor: topbar verde, cards de viaje, toggle online</td></tr>
+    <tr><td><code>public/assets/css/admin.css</code></td><td>CSS</td><td>Diseño del panel admin: sidebar, tablas, badges de estado, gráficas</td></tr>
+    <tr><td><code>public/sw.js</code></td><td>PWA</td><td>Service Worker: guarda en caché los assets para carga rápida, maneja notificaciones en segundo plano</td></tr>
+    <tr><td><code>public/manifest.json</code></td><td>PWA</td><td>Dice al navegador cómo mostrar la app instalada: nombre, ícono, pantalla de inicio, color de barra</td></tr>
+    <tr><td><code>public/uploads/.htaccess</code></td><td>Seguridad</td><td>Bloquea la ejecución de PHP en la carpeta de uploads para evitar que archivos subidos sean ejecutados</td></tr>
+    <tr><td><code>public/.htaccess</code></td><td>Seguridad</td><td>Reglas de seguridad para Apache: CSP, bloqueo de archivos sensibles, redirect a HTTPS</td></tr>
+    <tr><td><code>nginx.conf.example</code></td><td>Deploy</td><td>Plantilla de configuración del servidor Nginx para producción con SSL</td></tr>
+    <tr><td><code>.env.example</code></td><td>Deploy</td><td>Ejemplo de todas las variables de entorno que necesita configurar en producción</td></tr>
+    <tr><td><code>sql/movix_schema.sql</code></td><td>BD</td><td>Crea todas las tablas de la base de datos desde cero</td></tr>
+    <tr><td><code>sql/movix_seed.sql</code></td><td>BD</td><td>Inserta datos iniciales: tarifas por defecto y cupones de ejemplo</td></tr>
+    <tr><td><code>sql/fase6_migration.sql</code></td><td>BD</td><td>Migración que agregó la columna viaje_id a la tabla de chat</td></tr>
+    <tr><td><code>sql/crear_usuarios_prueba.php</code></td><td>Util</td><td>Script que crea los 3 usuarios de prueba con contraseñas cifradas correctamente</td></tr>
+    <tr><td><code>sql/debug_conductor.php</code></td><td>Util</td><td>Script de diagnóstico para revisar el estado de un conductor en la BD</td></tr>
+  </tbody>
+</table>
+
+</main>
+
+<script>
+function toggle(header) {
+  header.classList.toggle('open');
+  var body = header.nextElementSibling;
+  if (body) body.classList.toggle('open');
+}
+// Abrir la primera fase por defecto
+var first = document.querySelector('.fase-header');
+if (first) toggle(first);
+</script>
+</body>
+</html>
