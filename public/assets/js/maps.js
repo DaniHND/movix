@@ -80,7 +80,7 @@ const Maps = {
                     origenInput.dataset.lng = String(lng);
                 }
             },
-            () => { /* geolocation denegada — usar Tegucigalpa por defecto */ }
+            () => { /* geolocation denegada — usar La Ceiba por defecto */ }
         );
     },
 

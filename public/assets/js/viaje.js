@@ -53,7 +53,7 @@ const Viaje = {
 
             const origin = origLat !== null
                 ? { lat: origLat, lng: origLng }
-                : (origenEl?.value || 'Tegucigalpa, Honduras');
+                : (origenEl?.value || 'La Ceiba, Atlántida, Honduras');
 
             const destination = { lat: destLat, lng: destLng };
 
